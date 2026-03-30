@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>BPI Admin — Content Management Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0E1117; --bg2:#161B24; --bg3:#1E2530; --bg4:#252D3A;
+  --border:rgba(255,255,255,.07); --border2:rgba(255,255,255,.12);
+  --maroon:#6B1212; --maroon-l:#8B2020; --gold:#C9A84C; --gold-l:#E2C97A;
+  --white:#fff; --muted:rgba(255,255,255,.45); --text:rgba(255,255,255,.82);
+  --green:#1A7340; --red:#8B1A1A;
+  --sidebar:240px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:15px;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;}
+
+/* ── SIDEBAR ─────────────────────────────────── */
+.sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:100;}
+.sb-header{padding:20px 18px 16px;border-bottom:1px solid var(--border);}
+.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.sb-mark{width:36px;height:36px;background:var(--maroon);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.sb-mark svg{color:var(--gold-l);}
+.sb-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:var(--white);}
+.sb-sub{font-size:.68rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-top:2px;}
+.sb-status{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:.72rem;color:var(--muted);}
+.status-dot{width:7px;height:7px;background:#22C55E;border-radius:50%;animation:pulse 2s ease infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+.sb-section{padding:12px 10px 4px;font-size:.65rem;font-weight:700;color:rgba(255,255,255,.25);letter-spacing:.1em;text-transform:uppercase;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;margin:1px 8px;cursor:pointer;transition:all .15s;font-size:.84rem;color:var(--muted);border:1px solid transparent;}
+.sb-item:hover{background:rgba(255,255,255,.04);color:var(--text);}
+.sb-item.active{background:rgba(107,18,18,.25);color:var(--gold-l);border-color:rgba(107,18,18,.3);}
+.sb-item svg{flex-shrink:0;color:currentColor;}
+.sb-item .badge{margin-left:auto;background:var(--maroon);color:var(--white);font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;}
+
+.sb-footer{margin-top:auto;padding:12px 10px;border-top:1px solid var(--border);}
+.preview-btn{display:flex;align-items:center;gap:8px;width:100%;padding:10px 12px;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.2);color:var(--gold-l);border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Outfit',sans-serif;text-decoration:none;}
+.preview-btn:hover{background:rgba(201,168,76,.2);}
+
+/* ── MAIN ────────────────────────────────────── */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+
+/* ── TOP BAR ─────────────────────────────────── */
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-left{display:flex;align-items:center;gap:14px;}
+.topbar-title{font-size:1rem;font-weight:600;color:var(--white);}
+.breadcrumb{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:6px;}
+.breadcrumb span{color:var(--gold-l);}
+.topbar-right{display:flex;gap:10px;align-items:center;}
+.tb-btn{padding:7px 16px;border-radius:7px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Outfit',sans-serif;display:flex;align-items:center;gap:6px;}
+.tb-btn-ghost{background:rgba(255,255,255,.05);border:1px solid var(--border2);color:var(--muted);}
+.tb-btn-ghost:hover{color:var(--text);border-color:rgba(255,255,255,.2);}
+.tb-btn-primary{background:var(--maroon);border:none;color:var(--white);}
+.tb-btn-primary:hover{background:var(--maroon-l);}
+.tb-btn-gold{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.25);color:var(--gold-l);}
+.tb-btn-gold:hover{background:rgba(201,168,76,.25);}
+
+/* ── CONTENT AREA ────────────────────────────── */
+.content{padding:28px 32px;flex:1;}
+.section{display:none;}
+.section.active{display:block;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── DASHBOARD ───────────────────────────────── */
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.dash-card{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:22px;}
+.dash-card-label{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.dash-card-val{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;color:var(--white);line-height:1;}
+.dash-card-sub{font-size:.74rem;color:var(--muted);margin-top:5px;}
+.dash-card.gold .dash-card-val{color:var(--gold);}
+.dash-card.red .dash-card-val{color:#F87171;}
+
+.quick-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;}
+.qa{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:18px 20px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:14px;}
+.qa:hover{border-color:rgba(107,18,18,.4);background:rgba(107,18,18,.1);}
+.qa-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.qa-ico.maroon{background:rgba(107,18,18,.25);}
+.qa-ico.gold{background:rgba(201,168,76,.15);}
+.qa-ico.blue{background:rgba(59,130,246,.15);}
+.qa-ico svg{color:currentColor;}
+.qa-ico.maroon svg{color:#F87171;}
+.qa-ico.gold svg{color:var(--gold-l);}
+.qa-ico.blue svg{color:#93C5FD;}
+.qa strong{display:block;color:var(--white);font-size:.88rem;}
+.qa span{font-size:.76rem;color:var(--muted);}
+
+/* ── SECTION HEADERS ─────────────────────────── */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.sec-head-left h2{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--white);}
+.sec-head-left p{font-size:.8rem;color:var(--muted);margin-top:3px;}
+
+/* ── CARDS & FORMS ───────────────────────────── */
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:18px;}
+.card-head{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-l);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+.card-head svg{color:var(--gold);}
+
+.fg{margin-bottom:14px;}
+.fg label{display:block;font-size:.72rem;font-weight:600;color:rgba(255,255,255,.45);letter-spacing:.05em;margin-bottom:6px;}
+.fg input,.fg textarea,.fg select{width:100%;padding:10px 13px;background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:8px;color:var(--white);font-family:'Outfit',sans-serif;font-size:.86rem;transition:border .2s;outline:none;}
+.fg input::placeholder,.fg textarea::placeholder{color:rgba(255,255,255,.2);}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--gold);background:rgba(255,255,255,.07);}
+.fg textarea{resize:vertical;min-height:78px;}
+.fg select option{background:var(--bg3);color:var(--white);}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+
+/* ── ITEM LIST ───────────────────────────────── */
+.item-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.list-item{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;transition:border .2s;}
+.list-item:hover{border-color:rgba(255,255,255,.12);}
+.li-info{flex:1;min-width:0;}
+.li-title{font-size:.88rem;font-weight:500;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.li-meta{font-size:.74rem;color:var(--muted);margin-top:2px;}
+.li-actions{display:flex;gap:6px;flex-shrink:0;}
+.btn-sm{padding:5px 12px;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .15s;display:flex;align-items:center;gap:4px;border:1px solid;}
+.btn-edit{background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.2);color:#93C5FD;}
+.btn-edit:hover{background:rgba(59,130,246,.2);}
+.btn-del{background:rgba(220,38,38,.1);border-color:rgba(220,38,38,.15);color:#FCA5A5;}
+.btn-del:hover{background:rgba(220,38,38,.2);}
+.btn-up{background:rgba(255,255,255,.05);border-color:var(--border);color:var(--muted);}
+.btn-up:hover{color:var(--text);}
+
+/* ── SAVE ACTIONS ────────────────────────────── */
+.save-bar{display:flex;gap:10px;padding-top:16px;border-top:1px solid var(--border);margin-top:4px;}
+.btn-save{padding:9px 22px;background:var(--gold);color:#3E0808;border:none;border-radius:8px;font-size:.86rem;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;display:flex;align-items:center;gap:7px;transition:all .2s;}
+.btn-save:hover{background:var(--gold-l);}
+.btn-cancel{padding:9px 18px;background:rgba(255,255,255,.05);border:1px solid var(--border2);color:var(--muted);border-radius:8px;font-size:.86rem;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif;}
+.btn-cancel:hover{color:var(--text);}
+.btn-add-row{display:flex;align-items:center;gap:7px;padding:9px 18px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);color:var(--gold-l);border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;}
+.btn-add-row:hover{background:rgba(201,168,76,.2);}
+
+/* ── INLINE EDIT FORM ────────────────────────── */
+.edit-form{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.15);border-radius:12px;padding:20px;margin-top:8px;margin-bottom:8px;animation:fadeIn .2s ease;}
+
+/* ── MEDIA UPLOADER ──────────────────────────── */
+.mu-wrap{background:rgba(255,255,255,.03);border:1.5px dashed rgba(255,255,255,.12);border-radius:12px;overflow:hidden;transition:border .2s;}
+.mu-wrap.drag-over{border-color:var(--gold);background:rgba(201,168,76,.06);}
+.mu-preview{position:relative;background:rgba(0,0,0,.2);min-height:140px;display:flex;align-items:center;justify-content:center;}
+.mu-preview img{width:100%;max-height:200px;object-fit:contain;display:block;}
+.mu-preview .mu-empty{display:flex;flex-direction:column;align-items:center;gap:8px;padding:28px;color:rgba(255,255,255,.25);text-align:center;}
+.mu-preview .mu-empty svg{color:rgba(255,255,255,.15);}
+.mu-preview .mu-empty span{font-size:.75rem;}
+.mu-clear-btn{position:absolute;top:8px;right:8px;background:rgba(220,38,38,.8);border:none;color:white;width:26px;height:26px;border-radius:6px;cursor:pointer;display:none;align-items:center;justify-content:center;}
+.mu-preview img ~ .mu-clear-btn{display:flex;}
+.mu-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,.07);}
+.mu-tab{flex:1;padding:9px 12px;font-size:.76rem;font-weight:600;color:rgba(255,255,255,.35);cursor:pointer;text-align:center;transition:all .15s;border:none;background:none;font-family:'Outfit',sans-serif;border-bottom:2px solid transparent;margin-bottom:-1px;}
+.mu-tab.active{color:var(--gold-l);border-bottom-color:var(--gold);}
+.mu-body{padding:14px;}
+.mu-drop-zone{border:1.5px dashed rgba(255,255,255,.15);border-radius:8px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
+.mu-drop-zone:hover{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.03);}
+.mu-drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.mu-drop-zone svg{color:rgba(255,255,255,.25);margin-bottom:8px;}
+.mu-drop-zone .mu-drop-title{font-size:.82rem;color:rgba(255,255,255,.6);margin-bottom:3px;}
+.mu-drop-zone .mu-drop-sub{font-size:.72rem;color:rgba(255,255,255,.28);}
+.mu-url-row{display:flex;gap:8px;align-items:center;}
+.mu-url-row input{flex:1;padding:9px 12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:white;font-family:'Outfit',sans-serif;font-size:.84rem;outline:none;}
+.mu-url-row input:focus{border-color:var(--gold);}
+.mu-url-btn{padding:9px 16px;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.2);color:var(--gold-l);border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap;transition:all .2s;}
+.mu-url-btn:hover{background:rgba(201,168,76,.25);}
+.mu-hint{font-size:.71rem;color:rgba(255,255,255,.25);margin-top:8px;line-height:1.5;}
+.mu-size-warn{font-size:.72rem;color:#FCA5A5;margin-top:6px;display:none;}
+.mu-progress{height:3px;background:var(--gold);border-radius:2px;width:0%;transition:width .3s;margin-top:8px;display:none;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-label{font-size:.88rem;color:var(--text);}
+.toggle-sub{font-size:.76rem;color:var(--muted);margin-top:2px;}
+.toggle{position:relative;width:44px;height:24px;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:rgba(255,255,255,.1);border-radius:12px;cursor:pointer;transition:.25s;}
+.toggle input:checked+.toggle-slider{background:var(--maroon);}
+.toggle-slider::before{content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.25s;}
+.toggle input:checked+.toggle-slider::before{transform:translateX(20px);}
+
+/* ── COLOR PREVIEW ───────────────────────────── */
+.color-preview{width:36px;height:36px;border-radius:6px;border:1px solid var(--border2);flex-shrink:0;}
+
+/* ── IMAGE UPLOAD ────────────────────────────── */
+.img-preview{width:100%;height:120px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.03);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:8px;}
+.img-preview img{width:100%;height:100%;object-fit:cover;}
+.img-preview-empty{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--muted);}
+.img-preview-empty svg{color:rgba(255,255,255,.15);}
+.img-preview-empty span{font-size:.74rem;}
+
+/* ── STATUS BADGE ────────────────────────────── */
+.status-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:12px;font-size:.7rem;font-weight:600;}
+.status-published{background:rgba(34,197,94,.12);color:#86EFAC;border:1px solid rgba(34,197,94,.15);}
+.status-draft{background:rgba(250,204,21,.1);color:#FDE68A;border:1px solid rgba(250,204,21,.15);}
+
+/* ── TOAST ───────────────────────────────────── */
+.toast{position:fixed;bottom:24px;right:24px;z-index:9999;padding:12px 20px;border-radius:10px;font-size:.875rem;font-weight:500;opacity:0;transform:translateY(16px);transition:all .3s;pointer-events:none;}
+.toast.on{opacity:1;transform:translateY(0);}
+.toast.success{background:#14532D;color:#86EFAC;border:1px solid rgba(134,239,172,.2);}
+.toast.error{background:#450A0A;color:#FCA5A5;border:1px solid rgba(252,165,165,.2);}
+.toast.info{background:#1E3A5F;color:#93C5FD;border:1px solid rgba(147,197,253,.2);}
+
+/* ── CONFIRM DIALOG ──────────────────────────── */
+.confirm-ov{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;}
+.confirm-ov.on{display:flex;}
+.confirm-box{background:var(--bg3);border:1px solid var(--border2);border-radius:16px;padding:28px;max-width:380px;width:90%;animation:fadeIn .2s ease;}
+.confirm-box h4{color:var(--white);font-size:1rem;margin-bottom:8px;}
+.confirm-box p{font-size:.85rem;color:var(--muted);margin-bottom:22px;line-height:1.6;}
+.confirm-actions{display:flex;gap:10px;}
+.btn-confirm-del{padding:9px 20px;background:var(--red);border:none;color:var(--white);border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;}
+.btn-confirm-cancel{padding:9px 18px;background:rgba(255,255,255,.06);border:1px solid var(--border2);color:var(--muted);border-radius:8px;font-size:.85rem;cursor:pointer;font-family:'Outfit',sans-serif;}
+
+/* ── RESPONSIVE ──────────────────────────────── */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);} .main{margin-left:0;}
+  .dash-grid{grid-template-columns:1fr 1fr;}
+  .quick-actions{grid-template-columns:1fr;}
+  .fr2,.fr3{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN OVERLAY -->
+<div id="loginOverlay" style="position:fixed;inset:0;background:var(--bg);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+  <div class="card" style="width:100%;max-width:360px;">
+    <div class="card-head" style="justify-content:center;font-size:1.2rem;margin-bottom:24px;">BPI Admin Login</div>
+    <div class="fg"><label>Username</label><input id="loginUser" type="text" placeholder="admin" style="background:var(--bg2)"/></div>
+    <div class="fg"><label>Password</label><input id="loginPass" type="password" placeholder="••••••••" style="background:var(--bg2)"/></div>
+    <button class="btn-save" style="width:100%;margin-top:20px;justify-content:center;" onclick="doLogin()">Login</button>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-header">
+    <div class="sb-logo">
+      <div class="sb-mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+      <div>
+        <div class="sb-title">BPI Admin</div>
+      </div>
+    </div>
+    <div class="sb-sub">Content Management Panel</div>
+    <div class="sb-status"><span class="status-dot"></span>Connected to Live Site</div>
+  </div>
+
+  <div class="sb-section">Overview</div>
+  <div class="sb-item active" onclick="nav('dashboard',this)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    Dashboard
+  </div>
+
+  <div class="sb-section">Site Content</div>
+  <div class="sb-item" onclick="nav('announcement',this)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 17H2a3 3 0 000 6h20a3 3 0 000-6zM22 11H2"/><path d="M22 5H2"/></svg>
+    Announcement Bar
+  </div>
+  <div class="sb-item" onclick="nav('hero',this)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    Hero Slides
+  </div>
+  <div class="sb-item" onclick="nav('about',this)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    About BPI
+  </div>
+  <div class="sb-item" onclick="nav('history',this)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    History Timeline
+  </div>
+  <div class="sb-item" onclick="nav('services',this)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    Services
+  </div>
+
+  <div class="sb-section">Training</div>
+  <div class="sb-item" onclick="nav('courses',this)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+    Training Courses
+  </div>
+
+  <div class="sb-section">Media & Partners</div>
+  <div class="sb-item" onclick="nav('gallery',this)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    Gallery
+  </div>
+  <div class="sb-item" onclick="nav('partners',this)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+    Partners
+  </div>
+
+  <div class="sb-section">BPI–Rojgaar</div>
+  <div class="sb-item" onclick="nav('rojgaar',this)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 3l-4 4-4-4"/></svg>
+    Rojgaar Section
+  </div>
+
+  <div class="sb-section">Notifications</div>
+  <div class="sb-item" onclick="nav('notifications',this)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+    Popup Notifications
+  </div>
+
+  <div class="sb-section">Brand & Identity</div>
+  <div class="sb-item" onclick="nav('logo',this)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    Logo & Branding
+  </div>
+  <div class="sb-item" onclick="nav('social',this)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+    Social Media Links
+  </div>
+  <div class="sb-item" onclick="nav('location',this)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    Office Locations
+  </div>
+
+  <div class="sb-footer">
+    <a href="index.html" target="_blank" class="preview-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      Preview Live Site
+    </a>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div>
+        <div class="topbar-title" id="topTitle">Dashboard</div>
+        <div class="breadcrumb">BPI Admin <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg> <span id="topBread">Overview</span></div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="tb-btn tb-btn-ghost" onclick="resetToDefaults()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+        Reset Defaults
+      </button>
+      <button class="tb-btn tb-btn-gold" onclick="exportData()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export Data
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── DASHBOARD ─── -->
+    <div class="section active" id="sec-dashboard">
+      <div class="dash-grid">
+        <div class="dash-card gold" id="dc-slides"><div class="dash-card-label">Hero Slides</div><div class="dash-card-val" id="dcSlides">0</div><div class="dash-card-sub">Active slides</div></div>
+        <div class="dash-card" id="dc-courses"><div class="dash-card-label">Courses</div><div class="dash-card-val" id="dcCourses">0</div><div class="dash-card-sub">Training programmes</div></div>
+        <div class="dash-card" id="dc-partners"><div class="dash-card-label">Partners</div><div class="dash-card-val" id="dcPartners">0</div><div class="dash-card-sub">Organisations</div></div>
+        <div class="dash-card" id="dc-gallery"><div class="dash-card-label">Gallery</div><div class="dash-card-val" id="dcGallery">0</div><div class="dash-card-sub">Images</div></div>
+      </div>
+      <div class="quick-actions">
+        <div class="qa" onclick="navTo('courses')">
+          <div class="qa-ico maroon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div>
+          <div><strong>Add New Course</strong><span>Publish a training programme</span></div>
+        </div>
+        <div class="qa" onclick="navTo('hero')">
+          <div class="qa-ico gold"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+          <div><strong>Edit Hero Slides</strong><span>Update homepage slider</span></div>
+        </div>
+        <div class="qa" onclick="navTo('announcement')">
+          <div class="qa-ico blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 17H2a3 3 0 000 6h20a3 3 0 000-6z"/></svg></div>
+          <div><strong>Update Announcement</strong><span>Change the top banner text</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Site Activity</div>
+        <div style="color:var(--muted);font-size:.85rem;line-height:1.8;">
+          <p>All content changes made in this admin panel are saved to <strong style="color:var(--text);">localStorage</strong> and reflected on the live site immediately.</p>
+          <p style="margin-top:8px;">Changes appear on the live site as soon as you save — no page refresh needed. Use the <strong style="color:var(--gold-l);">Preview Live Site</strong> button to verify.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ANNOUNCEMENT ─── -->
+    <div class="section" id="sec-announcement">
+      <div class="sec-head">
+        <div class="sec-head-left"><h2>Announcement Bar</h2><p>The highlighted notice shown at the very top of the website.</p></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 17H2a3 3 0 000 6h20a3 3 0 000-6zM22 11H2"/></svg>Current Announcement</div>
+        <div class="fg"><label>Announcement Text</label><input id="annInput" placeholder="Enter announcement message visible to all site visitors..."/></div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">Show Announcement Bar</div><div class="toggle-sub">Hide or show the bar across the entire site</div></div>
+          <label class="toggle"><input type="checkbox" id="annVisible" checked/><span class="toggle-slider"></span></label>
+        </div>
+        <div class="save-bar">
+          <button class="btn-save" onclick="saveAnn()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save & Publish</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── HERO ─── -->
+    <div class="section" id="sec-hero">
+      <div class="sec-head">
+        <div class="sec-head-left"><h2>Hero Slides</h2><p>The full-screen slider shown at the top of the homepage.</p></div>
+        <button class="btn-add-row" onclick="openSlideForm(-1)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add New Slide</button>
+      </div>
+      <div id="slideList" class="item-list"></div>
+      <div id="slideForm" class="card edit-form" style="display:none;">
+        <div class="card-head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span id="slideFormLabel">Add Slide</span></div>
+        <input type="hidden" id="slideIdx" value="-1"/>
+        <div class="fg"><label>Slide Title *</label><input id="s_title" placeholder="e.g. Empowering Youth in Sudurpaschim Pradesh"/></div>
+        <div class="fr2">
+          <div class="fg"><label>Nepali Tagline</label><input id="s_nep" placeholder="सीप सिकौं..."/></div>
+          <div class="fg"><label>Tag / Label</label><input id="s_tag" placeholder="e.g. CTEVT Certified Training"/></div>
+        </div>
+        <div class="fg"><label>Description</label><textarea id="s_desc" placeholder="Short description for this slide..."></textarea></div>
+        <div class="fr3">
+          <div class="fg"><label>Primary Button</label><input id="s_btn1" placeholder="Apply Now"/></div>
+          <div class="fg"><label>Secondary Button</label><input id="s_btn2" placeholder="Learn More"/></div>
+          <div class="fg"><label>Background CSS</label><input id="s_bg" placeholder="linear-gradient(135deg,#3E0808,#0D1F3C)"/></div>
+        </div>
+        <div class="save-bar">
+          <button class="btn-save" onclick="saveSlide()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save Slide</button>
+          <button class="btn-cancel" onclick="closeSlideForm()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ABOUT ─── -->
+    <div class="section" id="sec-about">
+      <div class="sec-head"><div class="sec-head-left"><h2>About BPI</h2><p>The main about section text and content.</p></div></div>
+      <div class="card">
+        <div class="card-head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>About Text</div>
+        <div class="fg"><label>Section Title</label><input id="at_title" value="B Polytechnic Institute Pvt. Ltd."/></div>
+        <div class="fg"><label>Paragraph 1</label><textarea id="at_p1"></textarea></div>
+        <div class="fg"><label>Paragraph 2</label><textarea id="at_p2"></textarea></div>
+        <div class="fg"><label>Paragraph 3</label><textarea id="at_p3"></textarea></div>
+        <div class="save-bar"><button class="btn-save" onclick="saveAbout()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save & Publish</button></div>
+      </div>
+    </div>
+
+    <!-- ── HISTORY ─── -->
+    <div class="section" id="sec-history">
+      <div class="sec-head">
+        <div class="sec-head-left"><h2>History Timeline</h2><p>The chronological story of BPI shown in the About section.</p></div>
+        <button class="btn-add-row" onclick="openHistForm(-1)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Event</button>
+      </div>
+      <div id="histList" class="item-list"></div>
+      <div id="histForm" class="card edit-form" style="display:none;">
+        <div class="card-head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History Event</div>
+        <input type="hidden" id="histIdx" value="-1"/>
+        <div class="fr2">
+          <div class="fg"><label>Year *</label><input id="h_yr" placeholder="e.g. 2024"/></div>
+          <div class="fg"><label>Event Title *</label><input id="h_title" placeholder="e.g. New Campus Opened"/></div>
+        </div>
+        <div class="fg"><label>Description</label><textarea id="h_desc"></textarea></div>
+        <div class="save-bar"><button class="btn-save" onclick="saveHist()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save Event</button><button class="btn-cancel" onclick="closeHistForm()">Cancel</button></div>
+      </div>
+    </div>
+
+    <!-- ── SERVICES ─── -->
+    <div class="section" id="sec-services">
+      <div class="sec-head">
+        <div class="sec-head-left"><h2>Services</h2><p>Service cards shown in the About → Services tab.</p></div>
+        <button class="btn-add-row" onclick="openSvcForm(-1)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Service</button>
+      </div>
+      <div id="svcList" class="item-list"></div>
+      <div id="svcForm" class="card edit-form" style="display:none;">
+        <div class="card-head">Service</div>
+        <input type="hidden" id="svcIdx" value="-1"/>
+        <div class="fr2">
+          <div class="fg"><label>Title *</label><input id="sv_title" placeholder="e.g. Vocational Training"/></div>
+          <div class="fg"><label>SVG Path (icon d="...")</label><input id="sv_ico" placeholder="M22 10v6M2 10l10-5..."/></div>
+        </div>
+        <div class="fg"><label>Description</label><textarea id="sv_desc"></textarea></div>
+        <div class="save-bar"><button class="btn-save" onclick="saveSvc()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save</button><button class="btn-cancel" onclick="closeSvcForm()">Cancel</button></div>
+      </div>
+    </div>
+
+    <!-- ── COURSES ─── -->
+    <div class="section" id="sec-courses">
+      <div class="sec-head">
+        <div class="sec-head-left"><h2>Training Courses</h2><p>Manage all vocational training programmes shown on the site.</p></div>
+        <button class="btn-add-row" onclick="openCourseForm(-1)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Course</button>
+      </div>
+      <div id="courseList" class="item-list"></div>
+      <div id="courseForm" class="card edit-form" style="display:none;">
+        <div class="card-head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/></svg><span id="courseFormLabel">Add Course</span></div>
+        <input type="hidden" id="courseIdx" value="-1"/>
+        <div class="fr2">
+          <div class="fg"><label>Course Title *</label><input id="c_title" placeholder="e.g. Building Electrician"/></div>
+          <div class="fg"><label>Category</label>
+            <select id="c_cat">
+              <option value="Construction">Construction</option>
+              <option value="Hospitality">Hospitality</option>
+              <option value="Technical">Technical</option>
+              <option value="Tailoring">Tailoring</option>
+              <option value="Agriculture">Agriculture</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg"><label>Description</label><textarea id="c_desc" placeholder="What will students learn? Where can they work after?"></textarea></div>
+        <div class="fr3">
+          <div class="fg"><label>Training Fee</label><input id="c_fee" placeholder="NPR 4,500 or FREE"/></div>
+          <div class="fg"><label>Duration</label><input id="c_dur" placeholder="45 Days"/></div>
+          <div class="fg"><label>Badge</label>
+            <select id="c_badge">
+              <option value="CTEVT">CTEVT</option>
+              <option value="free">FREE</option>
+              <option value="new">NEW</option>
+              <option value="BPI">BPI</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="display:block;font-size:.72rem;font-weight:600;color:rgba(255,255,255,.45);letter-spacing:.05em;margin-bottom:8px;">Course Photo</label>
+          <div id="mu-course" class="mu-wrap"></div>
+        </div>
+        <div class="fg">
+          <label>Contact Email for Apply</label>
+          <input id="c_contact" placeholder="bpinepal20@gmail.com"/>
+        </div>
+        <div class="save-bar">
+          <button class="btn-save" onclick="saveCourse()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save & Publish</button>
+          <button class="btn-cancel" onclick="closeCourseForm()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── GALLERY ─── -->
+    <div class="section" id="sec-gallery">
+      <div class="sec-head">
+        <div class="sec-head-left"><h2>Gallery</h2><p>Photo gallery shown in the About → Gallery tab.</p></div>
+        <button class="btn-add-row" onclick="openGalForm()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Image</button>
+      </div>
+      <div id="galList" class="item-list"></div>
+      <div id="galForm" class="card edit-form" style="display:none;">
+        <div class="card-head">Add Gallery Image</div>
+        <div class="fg"><label>Caption *</label><input id="g_cap" placeholder="e.g. Electrical Training Workshop"/></div>
+        <div style="margin-bottom:14px;">
+          <label style="display:block;font-size:.72rem;font-weight:600;color:rgba(255,255,255,.45);letter-spacing:.05em;margin-bottom:8px;">Image</label>
+          <div id="mu-gallery" class="mu-wrap"></div>
+        </div>
+        <div class="save-bar"><button class="btn-save" onclick="saveGal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Add Image</button><button class="btn-cancel" onclick="closeGalForm()">Cancel</button></div>
+      </div>
+    </div>
+
+    <!-- ── PARTNERS ─── -->
+    <div class="section" id="sec-partners">
+      <div class="sec-head">
+        <div class="sec-head-left"><h2>Partners</h2><p>Organisation partner tags shown in the About → Partners tab.</p></div>
+      </div>
+      <div class="card">
+        <div class="card-head">Partner Organisations</div>
+        <div id="partnerList" class="item-list"></div>
+        <div class="fr2" style="margin-top:8px;">
+          <div class="fg"><label>New Partner Name</label><input id="p_new" placeholder="e.g. UNICEF Nepal"/></div>
+          <div style="display:flex;align-items:flex-end;padding-bottom:14px;">
+            <button class="btn-save" onclick="addPartner()">Add Partner</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ROJGAAR ─── -->
+    <div class="section" id="sec-rojgaar">
+      <div class="sec-head"><div class="sec-head-left"><h2>BPI–Rojgaar Section</h2><p>The career counselling section of the website. BPI–Rojgaar has its own dedicated branding — upload coming soon.</p></div></div>
+      <div class="card" style="background:rgba(201,168,76,.05);border-color:rgba(201,168,76,.15);margin-bottom:18px;">
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold-l)" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div>
+            <div style="color:var(--gold-l);font-size:.84rem;font-weight:600;margin-bottom:4px;">Separate Brand Identity</div>
+            <div style="font-size:.8rem;color:rgba(255,255,255,.5);line-height:1.65;">BPI–Rojgaar operates as a distinct initiative of BPI with its own logo, branding, and identity. You can upload the Rojgaar-specific logo and update its section details here once the branding is ready.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>BPI–Rojgaar Logo</div>
+        <div id="mu-rojgaar" class="mu-wrap" style="margin-bottom:4px;"></div>
+      </div>
+      <div class="card">
+        <div class="card-head">Section Text Content</div>
+        <div class="fg"><label>Section Heading</label><input id="roj_h" placeholder="BPI–Rojgaar"/></div>
+        <div class="fg"><label>Nepali Sub-heading</label><input id="roj_nep" placeholder="रोजगार क्लिनिक — सीप भएकाहरूको लागि निःशुल्क करियर मार्गदर्शन।"/></div>
+        <div class="fg"><label>Paragraph 1</label><textarea id="roj_p1"></textarea></div>
+        <div class="fg"><label>Paragraph 2</label><textarea id="roj_p2"></textarea></div>
+        <div class="fr2">
+          <div class="fg"><label>Primary Button Text</label><input id="roj_btn1" placeholder="Book Free Counselling"/></div>
+          <div class="fg"><label>Secondary Button Text</label><input id="roj_btn2" placeholder="Contact Us"/></div>
+        </div>
+        <div class="save-bar"><button class="btn-save" onclick="saveRojgaar()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save & Publish</button></div>
+      </div>
+    </div>
+
+    <!-- ── NOTIFICATIONS ─── -->
+    <div class="section" id="sec-notifications">
+      <div class="sec-head">
+        <div class="sec-head-left"><h2>Popup Notifications</h2><p>Manage the slide-in notification cards that appear to visitors on the landing page.</p></div>
+        <button class="btn-add-row" onclick="openNotifForm(-1)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Notification</button>
+      </div>
+      <div class="card" style="margin-bottom:18px;background:rgba(201,168,76,.05);border-color:rgba(201,168,76,.15);">
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold-l)" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div style="font-size:.82rem;color:rgba(255,255,255,.55);line-height:1.65;">Notifications appear as slide-in cards at the bottom-left of the page. Each is shown once per session, dismissable by the user, and timed with an auto-close countdown. Each notification needs a unique ID — changing it resets the dismiss history for that notification.</div>
+        </div>
+      </div>
+      <div id="notifList" class="item-list"></div>
+      <div id="notifForm" class="card edit-form" style="display:none;">
+        <div class="card-head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg><span id="notifFormLabel">Add Notification</span></div>
+        <input type="hidden" id="notifIdx" value="-1"/>
+        <div class="fr2">
+          <div class="fg">
+            <label>Type</label>
+            <select id="nf_type">
+              <option value="training">Training Programme</option>
+              <option value="announcement">Announcement</option>
+              <option value="promo">Promotion / Offer</option>
+              <option value="article">Article / Blog</option>
+            </select>
+          </div>
+          <div class="fg"><label>Badge Label</label><input id="nf_badge" placeholder="e.g. New Training / Free Offer"/></div>
+        </div>
+        <div class="fg"><label>Notification Title *</label><input id="nf_title" placeholder="e.g. Building Electrician — New Batch Starting"/></div>
+        <div class="fg"><label>Body Text</label><textarea id="nf_body" placeholder="Short description visible to the user..."></textarea></div>
+        <div class="fr3">
+          <div class="fg"><label>CTA Button Text</label><input id="nf_link" placeholder="View Course"/></div>
+          <div class="fg"><label>Delay before showing (ms)</label><input id="nf_delay" placeholder="2000" type="number"/></div>
+          <div class="fg"><label>Display Duration (ms)</label><input id="nf_dur" placeholder="9000" type="number"/></div>
+        </div>
+        <div class="fg"><label>Unique ID (do not repeat)</label><input id="nf_id" placeholder="e.g. n4"/></div>
+        <div class="save-bar">
+          <button class="btn-save" onclick="saveNotif()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save & Publish</button>
+          <button class="btn-cancel" onclick="closeNotifForm()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── LOGO & BRANDING ─── -->
+    <div class="section" id="sec-logo">
+      <div class="sec-head"><div class="sec-head-left"><h2>Logo &amp; Branding</h2><p>Upload the BPI logo from your PC or Google Drive, or paste any direct image URL.</p></div></div>
+      <div class="card">
+        <div class="card-head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>BPI Logo</div>
+        <div id="mu-logo" class="mu-wrap" style="margin-bottom:18px;"></div>
+        <div class="card-head" style="margin-top:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/></svg>Site Name &amp; Tagline</div>
+        <div class="fr2">
+          <div class="fg"><label>Institute Name</label><input id="brandName" placeholder="B Polytechnic Institute"/></div>
+          <div class="fg"><label>Sub-line (below logo)</label><input id="brandSub" placeholder="Pvt. Ltd. · CTEVT Affiliated"/></div>
+        </div>
+        <div class="fg"><label>Nepali Tagline (footer &amp; hero)</label><input id="brandNep" placeholder="सीप सिकौं, आत्मनिर्भर बनौं, भविष्य सुरक्षित गरौं।"/></div>
+        <div class="fg"><label>Site Browser Title</label><input id="brandTitle" placeholder="B Polytechnic Institute Pvt. Ltd."/></div>
+        <div class="save-bar"><button class="btn-save" onclick="saveBranding()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save Branding</button></div>
+      </div>
+    </div>
+
+    <!-- ── SOCIAL MEDIA ─── -->
+    <div class="section" id="sec-social">
+      <div class="sec-head"><div class="sec-head-left"><h2>Social Media Links</h2><p>All social links shown in the footer. Leave blank to hide a platform.</p></div></div>
+      <div class="card">
+        <div class="card-head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Platform Links</div>
+        <div class="fr2">
+          <div class="fg"><label>Facebook URL</label><input id="sm_fb" placeholder="https://facebook.com/bpihm"/></div>
+          <div class="fg"><label>Instagram URL</label><input id="sm_ig" placeholder="https://instagram.com/bpi.nepal"/></div>
+        </div>
+        <div class="fr2">
+          <div class="fg"><label>TikTok URL</label><input id="sm_tt" placeholder="https://tiktok.com/@bpi.nepal"/></div>
+          <div class="fg"><label>X (Twitter) URL</label><input id="sm_x" placeholder="https://x.com/bpinepal"/></div>
+        </div>
+        <div class="fr2">
+          <div class="fg"><label>YouTube URL</label><input id="sm_yt" placeholder="https://youtube.com/@bpi-np"/></div>
+          <div class="fg"><label>LinkedIn URL</label><input id="sm_li" placeholder="https://linkedin.com/company/bpinepal"/></div>
+        </div>
+        <div class="save-bar"><button class="btn-save" onclick="saveSocial()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save Social Links</button></div>
+      </div>
+    </div>
+
+    <!-- ── OFFICE LOCATIONS ─── -->
+    <div class="section" id="sec-location">
+      <div class="sec-head"><div class="sec-head-left"><h2>Office Locations</h2><p>Manage contact details shown in the Contact section and floating button.</p></div></div>
+      <div class="card">
+        <div class="card-head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Main Office</div>
+        <div class="fr2">
+          <div class="fg"><label>City / Area</label><input id="loc1_city" placeholder="Sukedhara, Kathmandu"/></div>
+          <div class="fg"><label>Province</label><input id="loc1_province" placeholder="Bagmati Province"/></div>
+        </div>
+        <div class="fg"><label>Full Address</label><input id="loc1_addr" placeholder="Sukedhara, Kathmandu-5, Bagmati Province, Nepal"/></div>
+        <div class="fg">
+          <label>Google Maps Link (Main Office)</label>
+          <input id="loc1_map" placeholder="https://maps.google.com/?q=Sukedhara+Kathmandu"/>
+          <div style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:4px;">Open Google Maps → search your address → click Share → copy link</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Registered / Branch Office</div>
+        <div class="fr2">
+          <div class="fg"><label>City / Area</label><input id="loc2_city" placeholder="Dhangadhi-1, Kailali"/></div>
+          <div class="fg"><label>Province</label><input id="loc2_province" placeholder="Sudurpashchim Province"/></div>
+        </div>
+        <div class="fg"><label>Full Address</label><input id="loc2_addr" placeholder="Dhangadhi-1, Kailali, Sudurpashchim Province, Nepal"/></div>
+        <div class="fg">
+          <label>Google Maps Link (Branch Office)</label>
+          <input id="loc2_map" placeholder="https://maps.google.com/?q=Dhangadhi+Kailali+Nepal"/>
+          <div style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:4px;">Open Google Maps → search your address → click Share → copy link</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07"/></svg>Contact Details</div>
+        <div class="fr2">
+          <div class="fg"><label>Phone 1 (Dhangadhi Office)</label><input id="loc_phone1" placeholder="+977-91-524485"/></div>
+          <div class="fg"><label>Phone 2 (President / WhatsApp)</label><input id="loc_phone2" placeholder="+977-9868558730"/></div>
+        </div>
+        <div class="fr2">
+          <div class="fg"><label>Primary Email</label><input id="loc_email1" placeholder="bpinepal20@gmail.com"/></div>
+          <div class="fg"><label>Secondary Email</label><input id="loc_email2" placeholder="beepolytechnic@gmail.com"/></div>
+        </div>
+        <div class="fg"><label>Office Hours</label><input id="loc_hours" placeholder="Sunday–Friday, 9AM–5PM"/></div>
+        <div class="save-bar"><button class="btn-save" onclick="saveLocation()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save Location &amp; Contact Details</button></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- CONFIRM DIALOG -->
+<div class="confirm-ov" id="confirmOv">
+  <div class="confirm-box">
+    <h4 id="confirmTitle">Delete this item?</h4>
+    <p id="confirmMsg">This action cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="btn-confirm-del" id="confirmOk">Delete</button>
+      <button class="btn-confirm-cancel" onclick="closeConfirm()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────
+const DEFAULTS = {
+  ann:"New Training Sessions Starting — CTEVT-Certified Vocational Courses Now Open for Admission. Contact BPI Today.",
+  slides:[
+    {tag:"CTEVT Certified Vocational Training",title:"Empowering Youth<br>in Sudurpaschim Pradesh",nep:"सीप सिकौं, आत्मनिर्भर बनौं, भविष्य सुरक्षित गरौं।",desc:"B Polytechnic Institute — Dhangadhi's trusted TVET institute since 2008. Real skills. Real jobs. Real futures.",btn1:"Explore Courses",btn2:"Free Counselling",bg:"linear-gradient(135deg,#3E0808 0%,#0D1F3C 100%)"},
+    {tag:"BPI–Rojgaar Career Clinic",title:"Free Career Guidance<br>for Trained Youth",nep:"तपाईंको सीप छ — BPI ले बाटो देखाउँछ।",desc:"Honest, free employment guidance. No fees. No pressure. No hidden agenda.",btn1:"Book Counselling",btn2:"Learn More",bg:"linear-gradient(135deg,#0D1F3C 0%,#162D52 50%,#6B1212 100%)"},
+    {tag:"New Sessions Starting Soon",title:"Build Your Skill.<br>Secure Your Future.",nep:"आजै Admission को लागि सम्पर्क गर्नुस्।",desc:"Construction, Hospitality, Electrical, Tailoring, Agriculture — CTEVT-certified courses at BPI Dhangadhi.",btn1:"Apply Now",btn2:"View Courses",bg:"linear-gradient(135deg,#6B1212 0%,#3E0808 40%,#0D1F3C 100%)"}
+  ],
+  courses:[
+    {title:"Building Electrician",category:"Technical",desc:"CTEVT-certified electrical wiring, installation and safety. Delivered with Dhangadhi Sub-Metro, Tikapur Municipality, and ROJGARI Project. High demand in Gulf and European markets.",fee:"Contact BPI",duration:"45 Days",badge:"CTEVT",img:"",contact:"bpinepal20@gmail.com"},
+    {title:"Bricklayer / Mason",category:"Construction",desc:"BPI's most-delivered trade — 20+ training events since 2008. CTEVT Level 1 and Level 2. Top overseas corridor: Qatar, UAE, Saudi Arabia.",fee:"Contact BPI",duration:"60 Days",badge:"CTEVT",img:"",contact:"bpinepal20@gmail.com"},
+    {title:"Waiter / Waitress",category:"Hospitality",desc:"Professional food and beverage service for hotels, restaurants, and resorts. Very high overseas placement potential in Gulf and European hospitality sector.",fee:"Contact BPI",duration:"45 Days",badge:"CTEVT",img:"",contact:"bpinepal20@gmail.com"},
+    {title:"Fast Food / General Cook",category:"Hospitality",desc:"Practical kitchen and food preparation skills. Gulf and European hotel sector placement pathways available.",fee:"Contact BPI",duration:"45 Days",badge:"CTEVT",img:"",contact:"bpinepal20@gmail.com"},
+    {title:"Tailor Master / Boutique",category:"Tailoring",desc:"From basic tailoring to advanced boutique garment making. Strong domestic enterprise and Gulf sector potential.",fee:"Contact BPI",duration:"60 Days",badge:"CTEVT",img:"",contact:"bpinepal20@gmail.com"},
+    {title:"Furniture Maker",category:"Construction",desc:"Woodworking and furniture fabrication. Regional employment across Kailali and Kanchanpur. Malaysia and UAE woodworking sector pathways.",fee:"Contact BPI",duration:"60 Days",badge:"CTEVT",img:"",contact:"bpinepal20@gmail.com"},
+    {title:"Mobile & AC Repair",category:"Technical",desc:"Mobile phone repair and AC/refrigerator servicing. Growing domestic demand and Gulf service sector opportunities.",fee:"Contact BPI",duration:"45 Days",badge:"CTEVT",img:"",contact:"bpinepal20@gmail.com"},
+    {title:"Mushroom & Vegetable Farming",category:"Agriculture",desc:"Off-season vegetable production and mushroom cultivation. Ideal for domestic enterprise and cooperatives in Far-West Nepal.",fee:"FREE",duration:"30 Days",badge:"free",img:"",contact:"bpinepal20@gmail.com"},
+    {title:"Plumbing",category:"Construction",desc:"CTEVT-certified plumbing for residential and commercial construction. High overseas demand in Gulf construction sector.",fee:"Contact BPI",duration:"45 Days",badge:"CTEVT",img:"",contact:"bpinepal20@gmail.com"}
+  ],
+  history:[
+    {yr:"2008",title:"BPI Established",desc:"Registered as a private firm by the Office of Small and Cottage Industries, Kailali on October 21, 2008 (2065 B.S.)."},
+    {yr:"2011",title:"Incorporated as Pvt. Ltd.",desc:"Formally incorporated as a Private Limited Company by the Company Registrar's Office on September 16, 2011. PAN/VAT No. 303337100 obtained."},
+    {yr:"2012–2014",title:"Alliance Nepal & ROJGARI Partnerships",desc:"Delivered Mason, Tailoring, Hotel & Hospitality, and Electrician training across Kailali and Kanchanpur with Alliance Nepal, SEBAC Nepal, and Practical Action Nepal."},
+    {yr:"2013–2016",title:"ILO & Helvetas Employment Fund",desc:"Expanded vocational training with ILO, Practical Action Nepal (ROJGARI Project), and Helvetas/Employment Fund Secretariat."},
+    {yr:"2016–2017",title:"Good Neighbors & Municipal Partnerships",desc:"Training in Doti District with Good Neighbors International. Partnered with Dhangadhi Sub-Metropolitan City for community electrician training."},
+    {yr:"2019–2021",title:"CTEVT Province 7 Expansion",desc:"Delivered programmes under CTEVT Province 7, Tikapur Municipality, and Bannigadhi Jayagadh Rural Municipality."},
+    {yr:"2026",title:"Main Office — Sukedhara, Kathmandu",desc:"BPI establishes its main operational office in Sukedhara, Kathmandu, expanding capacity for national training and career counselling."}
+  ],
+  services:[
+    {ico:"M22 10v6M2 10l10-5 10 5-10 5zM6 12v5c3 3 9 3 12 0v-5",title:"Technical & Vocational Training",desc:"CTEVT-certified courses across Construction, Hospitality, Electrical, Tailoring, Agriculture, Mobile Repair, and Mechanical — delivered to CTEVT Province 7 standards."},
+    {ico:"M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z",title:"BPI Rojgaar — Career Counselling",desc:"Free career guidance through the Rojagar Clinic — overseas employment, domestic jobs, or entrepreneurship pathways. Motivation, pathway advisory, and job placement support."},
+    {ico:"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z",title:"Safe Migration Advisory",desc:"Honest overseas employment guidance — DoFE verification, Employer Pays model, fraud protection, and pre-departure support."},
+    {ico:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",title:"Business & Management Consultancy",desc:"Business development support, management advisory, feasibility surveys, and business plan preparation for individuals, enterprises, cooperatives, BFIs, and government."},
+    {ico:"M3 3h18v18H3zM3 9h18M9 21V9",title:"Entrepreneurship & Enterprise Development",desc:"Enterprise facilitation, business startup advisory, agro-forestry and high-value crop planning, EDF programme delivery."},
+    {ico:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75M9 7a4 4 0 100 8",title:"Social Mobilization & Capacity Building",desc:"Community mobilization, event management, institutional capacity building for NGOs and CBOs, and women empowerment programmes."},
+    {ico:"M11 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-6",title:"Research & Evaluation",desc:"Baseline studies, impact evaluations, need assessments, labour market information studies, and policy analysis."}
+  ],
+  partners:["International Labour Organisation (ILO)","Helvetas Nepal / Employment Fund Secretariat","Practical Action Nepal — ROJGARI Project","Alliance Nepal","CTEVT Province 7","Dhangadhi Sub-Metropolitan City","Tikapur Municipality","Bannigadhi Jayagadh Rural Municipality","Good Neighbors International","SEBAC Nepal","DDC Kailali","Kailali Chamber of Commerce & Industries","Far-West Transporters Association","FNCCI"],
+  gallery:[
+    {url:"https://images.unsplash.com/photo-1558522195-e1201b090344?w=800&q=80",cap:"BPI Training Session"},
+    {url:"https://images.unsplash.com/photo-1581092921461-eab10380ed66?w=600&q=80",cap:"Electrical Workshop"},
+    {url:"https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&q=80",cap:"Hospitality Course"},
+    {url:"https://images.unsplash.com/photo-1578574577315-3fbeb0cecdc2?w=600&q=80",cap:"Tailoring Class"},
+    {url:"https://images.unsplash.com/photo-1530099486328-e021101a494a?w=600&q=80",cap:"Career Counselling"}
+  ],
+  rojgaar:{h:"Tapaiiko Sip Chha.<br>Aba Bato Pani Chha.",nep:"तपाईंको सीप छ। अब बाटो पनि छ।",p1:"BPI–Rojgaar is the career counselling arm of B Polytechnic Institute — a free, honest employment guidance service for trained youth of Sudurpaschim Pradesh.",p2:"Whether you want to work in the Gulf, explore Europe, find a domestic job, or start your own business — BPI's counsellors help you understand your real options, protect yourself from fraud, and make informed decisions.",btn1:"Book Free Counselling",btn2:"Contact Us"}
+};
+
+let siteData = null;
+function D() { return siteData || JSON.parse(JSON.stringify(DEFAULTS)); }
+
+async function loadDynamicData() {
+  try {
+    const res = await fetch('/api/data');
+    if(res.ok) {
+      siteData = await res.json();
+    }
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+async function saveD(d) {
+  siteData = d;
+  const token = localStorage.getItem('bpiAdminToken');
+  if(!token) {
+    toast('Not logged in. Changes not saved.', 'error');
+    return;
+  }
+  try {
+    const res = await fetch('/api/data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify(d)
+    });
+    if(res.ok) {
+      updateDashboard();
+    } else {
+      toast('Failed to save to server', 'error');
+    }
+  } catch(e) {
+    toast('Error saving data', 'error');
+  }
+}
+
+async function checkAuth() {
+  const token = localStorage.getItem('bpiAdminToken');
+  if(!token) return false;
+  try {
+    const res = await fetch('/api/verify', { headers: { 'Authorization': 'Bearer ' + token } });
+    return res.ok;
+  } catch(e) { return false; }
+}
+
+async function doLogin() {
+  const u = document.getElementById('loginUser').value;
+  const p = document.getElementById('loginPass').value;
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({username: u, password: p})
+    });
+    if(res.ok) {
+      const data = await res.json();
+      localStorage.setItem('bpiAdminToken', data.token);
+      document.getElementById('loginOverlay').style.display = 'none';
+      toast('Logged in successfully', 'success');
+    } else {
+      toast('Invalid credentials', 'error');
+    }
+  } catch(e) {
+    toast('Login error', 'error');
+  }
+}
+
+// ── NAVIGATION ────────────────────────────────
+function navTo(id){
+  const el=document.querySelector(`.sb-item[onclick*="'${id}'"]`);
+  nav(id, el||null);
+}
+function nav(id, el) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  const titles={dashboard:'Dashboard',announcement:'Announcement Bar',hero:'Hero Slides',about:'About BPI',history:'History Timeline',services:'Services',courses:'Training Courses',gallery:'Gallery',partners:'Partners',rojgaar:'BPI–Rojgaar',notifications:'Popup Notifications',logo:'Logo & Branding',social:'Social Media Links',location:'Office Locations'};
+  document.getElementById('topTitle').textContent=titles[id]||id;
+  document.getElementById('topBread').textContent=titles[id]||id;
+  loadSection(id);
+}
+
+function loadSection(id) {
+  if(id==='dashboard') updateDashboard();
+  if(id==='announcement') loadAnn();
+  if(id==='hero') loadSlides();
+  if(id==='about') loadAbout();
+  if(id==='history') loadHistory();
+  if(id==='services') loadServices();
+  if(id==='courses') loadCourses();
+  if(id==='gallery') loadGallery();
+  if(id==='partners') loadPartners();
+  if(id==='rojgaar') loadRojgaar();
+  if(id==='notifications') loadNotifications();
+  if(id==='logo') loadBranding();
+  if(id==='social') loadSocial();
+  if(id==='location') loadLocation();
+}
+
+// ── DASHBOARD ─────────────────────────────────
+function updateDashboard() {
+  const d=D();
+  document.getElementById('dcSlides').textContent=(d.slides||[]).length;
+  document.getElementById('dcCourses').textContent=(d.courses||[]).length;
+  document.getElementById('dcPartners').textContent=(d.partners||[]).length;
+  document.getElementById('dcGallery').textContent=(d.gallery||[]).length;
+}
+
+// ── ANNOUNCEMENT ──────────────────────────────
+function loadAnn(){const d=D();document.getElementById('annInput').value=d.ann||'';}
+function saveAnn(){
+  const d=D();d.ann=document.getElementById('annInput').value;
+  saveD(d);toast('Announcement saved & published!','success');
+}
+
+// ── SLIDES ────────────────────────────────────
+function loadSlides(){
+  const d=D(); const el=document.getElementById('slideList');
+  el.innerHTML=(d.slides||[]).map((s,i)=>`
+    <div class="list-item">
+      <div class="li-info">
+        <div class="li-title">${s.title?.replace('<br>',' ')}</div>
+        <div class="li-meta">${s.tag||'No tag'} · ${s.btn1||'No button'}</div>
+      </div>
+      <div class="li-actions">
+        ${i>0?`<button class="btn-sm btn-up" onclick="moveSlide(${i},-1)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg></button>`:''}
+        ${i<(d.slides.length-1)?`<button class="btn-sm btn-up" onclick="moveSlide(${i},1)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>`:''}
+        <button class="btn-sm btn-edit" onclick="openSlideForm(${i})"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button>
+        <button class="btn-sm btn-del" onclick="confirmDel('Delete this slide?','This will remove the slide from the homepage.',()=>deleteSlide(${i}))"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>Delete</button>
+      </div>
+    </div>`).join('');
+}
+function openSlideForm(i){
+  document.getElementById('slideForm').style.display='block';
+  document.getElementById('slideIdx').value=i;
+  document.getElementById('slideFormLabel').textContent=i<0?'Add New Slide':'Edit Slide';
+  if(i>=0){const d=D();const s=d.slides[i];document.getElementById('s_title').value=s.title||'';document.getElementById('s_nep').value=s.nep||'';document.getElementById('s_tag').value=s.tag||'';document.getElementById('s_desc').value=s.desc||'';document.getElementById('s_btn1').value=s.btn1||'';document.getElementById('s_btn2').value=s.btn2||'';document.getElementById('s_bg').value=s.bg||'';}
+  else{['s_title','s_nep','s_tag','s_desc','s_btn1','s_btn2','s_bg'].forEach(id=>document.getElementById(id).value='');}
+}
+function closeSlideForm(){document.getElementById('slideForm').style.display='none';}
+function saveSlide(){
+  const t=document.getElementById('s_title').value.trim();
+  if(!t){toast('Title is required.','error');return;}
+  const d=D();
+  const slide={title:t,nep:document.getElementById('s_nep').value,tag:document.getElementById('s_tag').value,desc:document.getElementById('s_desc').value,btn1:document.getElementById('s_btn1').value,btn2:document.getElementById('s_btn2').value,bg:document.getElementById('s_bg').value};
+  const idx=parseInt(document.getElementById('slideIdx').value);
+  if(idx>=0) d.slides[idx]=slide; else d.slides.push(slide);
+  saveD(d);closeSlideForm();loadSlides();toast('Slide saved!','success');
+}
+function deleteSlide(i){const d=D();d.slides.splice(i,1);saveD(d);loadSlides();toast('Slide deleted.','info');}
+function moveSlide(i,dir){const d=D();const tmp=d.slides[i];d.slides[i]=d.slides[i+dir];d.slides[i+dir]=tmp;saveD(d);loadSlides();}
+
+// ── ABOUT ─────────────────────────────────────
+function loadAbout(){
+  const d=D(); const ab=d.about||{};
+  document.getElementById('at_title').value=ab.title||'B Polytechnic Institute Pvt. Ltd.';
+  document.getElementById('at_p1').value=ab.p1||'B Polytechnic Institute (BPI) is a CTEVT-affiliated Technical and Vocational Education and Training (TVET) institute based in Dhangadhi-1, Kailali. Since 2008, we have been turning the potential of Sudurpaschim Pradesh\'s youth into real, job-ready skills and lasting livelihoods.';
+  document.getElementById('at_p2').value=ab.p2||'BPI was founded by experienced development professionals who recognized a critical gap: Far-West Nepal had hardworking, capable young people — but lacked quality vocational training that prepared someone for a real job, a safe overseas journey, or their own enterprise.';
+  document.getElementById('at_p3').value=ab.p3||'Today, BPI is more than a training institute. It is a career guidance centre, a community resource, and a trusted employment advisor — rooted in Kailali, always accessible.';
+}
+function saveAbout(){
+  const d=D();
+  d.about={title:document.getElementById('at_title').value,p1:document.getElementById('at_p1').value,p2:document.getElementById('at_p2').value,p3:document.getElementById('at_p3').value};
+  saveD(d);toast('About section saved!','success');
+}
+
+// ── HISTORY ───────────────────────────────────
+function loadHistory(){
+  const d=D();const el=document.getElementById('histList');
+  el.innerHTML=(d.history||[]).map((h,i)=>`<div class="list-item"><div class="li-info"><div class="li-title">${h.yr} — ${h.title}</div><div class="li-meta">${h.desc.substring(0,70)}...</div></div><div class="li-actions"><button class="btn-sm btn-edit" onclick="openHistForm(${i})">Edit</button><button class="btn-sm btn-del" onclick="confirmDel('Delete this event?','',()=>deleteHist(${i}))">Delete</button></div></div>`).join('');
+}
+function openHistForm(i){
+  document.getElementById('histForm').style.display='block';document.getElementById('histIdx').value=i;
+  if(i>=0){const h=D().history[i];document.getElementById('h_yr').value=h.yr;document.getElementById('h_title').value=h.title;document.getElementById('h_desc').value=h.desc;}
+  else{['h_yr','h_title','h_desc'].forEach(id=>document.getElementById(id).value='');}
+}
+function closeHistForm(){document.getElementById('histForm').style.display='none';}
+function saveHist(){
+  const yr=document.getElementById('h_yr').value.trim();const title=document.getElementById('h_title').value.trim();
+  if(!yr||!title){toast('Year and title required.','error');return;}
+  const d=D();const item={yr,title,desc:document.getElementById('h_desc').value};
+  const idx=parseInt(document.getElementById('histIdx').value);
+  if(idx>=0) d.history[idx]=item; else d.history.push(item);
+  saveD(d);closeHistForm();loadHistory();toast('History event saved!','success');
+}
+function deleteHist(i){const d=D();d.history.splice(i,1);saveD(d);loadHistory();toast('Event deleted.','info');}
+
+// ── SERVICES ──────────────────────────────────
+function loadServices(){
+  const d=D();const el=document.getElementById('svcList');
+  el.innerHTML=(d.services||[]).map((s,i)=>`<div class="list-item"><div class="li-info"><div class="li-title">${s.title}</div><div class="li-meta">${s.desc.substring(0,65)}...</div></div><div class="li-actions"><button class="btn-sm btn-edit" onclick="openSvcForm(${i})">Edit</button><button class="btn-sm btn-del" onclick="confirmDel('Delete this service?','',()=>deleteSvc(${i}))">Delete</button></div></div>`).join('');
+}
+function openSvcForm(i){
+  document.getElementById('svcForm').style.display='block';document.getElementById('svcIdx').value=i;
+  if(i>=0){const s=D().services[i];document.getElementById('sv_title').value=s.title;document.getElementById('sv_ico').value=s.ico||'';document.getElementById('sv_desc').value=s.desc;}
+  else{['sv_title','sv_ico','sv_desc'].forEach(id=>document.getElementById(id).value='');}
+}
+function closeSvcForm(){document.getElementById('svcForm').style.display='none';}
+function saveSvc(){
+  const t=document.getElementById('sv_title').value.trim();if(!t){toast('Title required.','error');return;}
+  const d=D();const item={title:t,ico:document.getElementById('sv_ico').value,desc:document.getElementById('sv_desc').value};
+  const idx=parseInt(document.getElementById('svcIdx').value);
+  if(idx>=0) d.services[idx]=item; else d.services.push(item);
+  saveD(d);closeSvcForm();loadServices();toast('Service saved!','success');
+}
+function deleteSvc(i){const d=D();d.services.splice(i,1);saveD(d);loadServices();toast('Service deleted.','info');}
+
+// ── COURSES ───────────────────────────────────
+function loadCourses(){
+  const d=D();const el=document.getElementById('courseList');
+  el.innerHTML=(d.courses||[]).map((c,i)=>`<div class="list-item"><div class="li-info"><div class="li-title">${c.title}</div><div class="li-meta">${c.category} · ${c.fee} · ${c.duration} <span class="status-badge ${c.badge==='free'?'status-published':'status-draft'}" style="margin-left:6px;">${c.badge}</span></div></div><div class="li-actions"><button class="btn-sm btn-edit" onclick="openCourseForm(${i})">Edit</button><button class="btn-sm btn-del" onclick="confirmDel('Delete ${c.title}?','This will remove the course from the website.',()=>deleteCourse(${i}))">Delete</button></div></div>`).join('');
+}
+function openCourseForm(i){
+  document.getElementById('courseForm').style.display='block';document.getElementById('courseIdx').value=i;
+  document.getElementById('courseFormLabel').textContent=i<0?'Add New Course':'Edit Course';
+  if(i>=0){const c=D().courses[i];document.getElementById('c_title').value=c.title;document.getElementById('c_cat').value=c.category;document.getElementById('c_desc').value=c.desc;document.getElementById('c_fee').value=c.fee;document.getElementById('c_dur').value=c.duration;document.getElementById('c_badge').value=c.badge;document.getElementById('c_contact').value=c.contact||'';createMediaUploader('mu-course',{label:'Course Photo',initialValue:c.img||'',maxSizeMB:4});}
+  else{['c_title','c_desc','c_fee','c_dur','c_contact'].forEach(id=>document.getElementById(id).value='');document.getElementById('c_cat').value='Construction';document.getElementById('c_badge').value='CTEVT';createMediaUploader('mu-course',{label:'Course Photo',initialValue:'',maxSizeMB:4});}
+}
+function closeCourseForm(){document.getElementById('courseForm').style.display='none';}
+// previewImg removed - using MediaUploader
+function saveCourse(){
+  const t=document.getElementById('c_title').value.trim();if(!t){toast('Course title required.','error');return;}
+  const d=D();
+  const course={title:t,category:document.getElementById('c_cat').value,desc:document.getElementById('c_desc').value,fee:document.getElementById('c_fee').value,duration:document.getElementById('c_dur').value,badge:document.getElementById('c_badge').value,img:muGetValue('mu-course'),contact:document.getElementById('c_contact').value};
+  const idx=parseInt(document.getElementById('courseIdx').value);
+  if(idx>=0) d.courses[idx]=course; else d.courses.push(course);
+  saveD(d);closeCourseForm();loadCourses();toast('Course saved & published!','success');
+}
+function deleteCourse(i){const d=D();d.courses.splice(i,1);saveD(d);loadCourses();toast('Course deleted.','info');}
+
+// ── GALLERY ───────────────────────────────────
+function loadGallery(){
+  const d=D();const el=document.getElementById('galList');
+  el.innerHTML=(d.gallery||[]).map((g,i)=>`<div class="list-item"><div class="li-info"><div class="li-title">${g.cap}</div><div class="li-meta" style="word-break:break-all;font-size:.72rem;">${g.url?g.url.substring(0,60)+'...':'No URL'}</div></div><div class="li-actions"><button class="btn-sm btn-del" onclick="confirmDel('Remove this image?','',()=>deleteGal(${i}))">Remove</button></div></div>`).join('');
+}
+function openGalForm(){document.getElementById('galForm').style.display='block';document.getElementById('g_cap').value='';createMediaUploader('mu-gallery',{label:'Gallery Image',initialValue:'',maxSizeMB:4});}
+function closeGalForm(){document.getElementById('galForm').style.display='none';}
+function saveGal(){
+  const url=muGetValue('mu-gallery');const cap=document.getElementById('g_cap').value.trim();
+  if(!cap){toast('Caption is required.','error');return;}
+  const d=D();d.gallery.push({url,cap});saveD(d);closeGalForm();loadGallery();toast('Image added!','success');
+}
+function deleteGal(i){const d=D();d.gallery.splice(i,1);saveD(d);loadGallery();toast('Image removed.','info');}
+
+// ── PARTNERS ──────────────────────────────────
+function loadPartners(){
+  const d=D();const el=document.getElementById('partnerList');
+  el.innerHTML=(d.partners||[]).map((p,i)=>`<div class="list-item"><div class="li-info"><div class="li-title">${p}</div></div><div class="li-actions"><button class="btn-sm btn-del" onclick="confirmDel('Remove ${p}?','',()=>deletePart(${i}))">Remove</button></div></div>`).join('');
+}
+function addPartner(){
+  const name=document.getElementById('p_new').value.trim();if(!name)return;
+  const d=D();d.partners.push(name);saveD(d);document.getElementById('p_new').value='';loadPartners();toast('Partner added!','success');
+}
+function deletePart(i){const d=D();d.partners.splice(i,1);saveD(d);loadPartners();toast('Partner removed.','info');}
+
+// ── ROJGAAR ───────────────────────────────────
+// ── ROJGAAR ───────────────────────────────────
+// previewRojLogo removed - using MediaUploader
+function loadRojgaar(){
+  const d=D();const r=d.rojgaar||DEFAULTS.rojgaar;
+  document.getElementById('roj_h').value=r.h||'';
+  document.getElementById('roj_nep').value=r.nep||'';
+  document.getElementById('roj_p1').value=r.p1||'';
+  document.getElementById('roj_p2').value=r.p2||'';
+  document.getElementById('roj_btn1').value=r.btn1||'';
+  document.getElementById('roj_btn2').value=r.btn2||'';
+  createMediaUploader('mu-rojgaar',{label:'Rojgaar Logo',initialValue:r.logoUrl||'',maxSizeMB:4});
+}
+function saveRojgaar(){
+  const d=D();
+  d.rojgaar={
+    h:document.getElementById('roj_h').value,
+    nep:document.getElementById('roj_nep').value,
+    p1:document.getElementById('roj_p1').value,
+    p2:document.getElementById('roj_p2').value,
+    btn1:document.getElementById('roj_btn1').value,
+    btn2:document.getElementById('roj_btn2').value,
+    logoUrl:muGetValue('mu-rojgaar')
+  };
+  saveD(d);toast('BPI–Rojgaar section saved!','success');
+}
+
+// ── NOTIFICATIONS ─────────────────────────────
+const NOTIF_DEFAULTS_ADMIN=[
+  {id:'n1',type:'training',badge:'New Training',title:'Building Electrician — New Batch Starting',body:'CTEVT-certified course. 45-day programme. Limited seats for upcoming batch in Dhangadhi.',link:'View Course',delay:2000,duration:9000},
+  {id:'n2',type:'promo',badge:'Free Offer',title:'Free Career Counselling — BPI Rojgaar',body:'Book a free 30-minute session with BPI\'s counsellors. No pressure, no fees.',link:'Book Now',delay:12000,duration:9000},
+  {id:'n3',type:'announcement',badge:'Announcement',title:'New Session Open for Admission',body:'BPI is now accepting applications for multiple vocational programmes.',link:'Apply Now',delay:24000,duration:8000}
+];
+function getNotifsFromStore(){const d=D();return d.notifications&&d.notifications.length?d.notifications:NOTIF_DEFAULTS_ADMIN;}
+function loadNotifications(){
+  const list=getNotifsFromStore();const el=document.getElementById('notifList');
+  const typeColors={training:'#F87171',announcement:'#93C5FD',promo:'#FCD34D',article:'#86EFAC'};
+  el.innerHTML=list.map((n,i)=>`<div class="list-item">
+    <div style="width:4px;height:100%;min-height:44px;background:${typeColors[n.type]||'#888'};border-radius:2px;flex-shrink:0;align-self:stretch;margin-right:4px;"></div>
+    <div class="li-info">
+      <div class="li-title">${n.title}</div>
+      <div class="li-meta">${n.type} · Delay: ${n.delay/1000}s · Duration: ${n.duration/1000}s · ID: ${n.id}</div>
+    </div>
+    <div class="li-actions">
+      <button class="btn-sm btn-edit" onclick="openNotifForm(${i})">Edit</button>
+      <button class="btn-sm btn-del" onclick="confirmDel('Delete this notification?','It will no longer appear to visitors.',()=>deleteNotif(${i}))">Delete</button>
+    </div>
+  </div>`).join('');
+}
+function openNotifForm(i){
+  document.getElementById('notifForm').style.display='block';
+  document.getElementById('notifIdx').value=i;
+  document.getElementById('notifFormLabel').textContent=i<0?'Add Notification':'Edit Notification';
+  if(i>=0){
+    const n=getNotifsFromStore()[i];
+    document.getElementById('nf_type').value=n.type||'training';
+    document.getElementById('nf_badge').value=n.badge||'';
+    document.getElementById('nf_title').value=n.title||'';
+    document.getElementById('nf_body').value=n.body||'';
+    document.getElementById('nf_link').value=n.link||'';
+    document.getElementById('nf_delay').value=n.delay||2000;
+    document.getElementById('nf_dur').value=n.duration||9000;
+    document.getElementById('nf_id').value=n.id||'';
+  } else {
+    ['nf_badge','nf_title','nf_body','nf_link','nf_id'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('nf_type').value='training';
+    document.getElementById('nf_delay').value=2000;
+    document.getElementById('nf_dur').value=9000;
+  }
+}
+function closeNotifForm(){document.getElementById('notifForm').style.display='none';}
+function saveNotif(){
+  const title=document.getElementById('nf_title').value.trim();
+  const id=document.getElementById('nf_id').value.trim();
+  if(!title||!id){toast('Title and ID are required.','error');return;}
+  const d=D();
+  if(!d.notifications) d.notifications=[...NOTIF_DEFAULTS_ADMIN];
+  const item={id,type:document.getElementById('nf_type').value,badge:document.getElementById('nf_badge').value,title,body:document.getElementById('nf_body').value,link:document.getElementById('nf_link').value,delay:parseInt(document.getElementById('nf_delay').value)||2000,duration:parseInt(document.getElementById('nf_dur').value)||9000};
+  const idx=parseInt(document.getElementById('notifIdx').value);
+  if(idx>=0) d.notifications[idx]=item; else d.notifications.push(item);
+  saveD(d);closeNotifForm();loadNotifications();toast('Notification saved!','success');
+}
+function deleteNotif(i){
+  const d=D();
+  if(!d.notifications) d.notifications=[...NOTIF_DEFAULTS_ADMIN];
+  d.notifications.splice(i,1);saveD(d);loadNotifications();toast('Notification deleted.','info');
+}
+
+// ════════════════════════════════════════════════
+// ── MEDIA UPLOADER ENGINE ────────────────────
+// ════════════════════════════════════════════════
+const muInstances={};
+
+function gdriveDirect(url){
+  const patterns=[
+    /drive\.google\.com\/file\/d\/([^\/\?]+)/,
+    /drive\.google\.com\/open\?id=([^&]+)/,
+    /drive\.google\.com\/uc\?.*id=([^&]+)/,
+    /docs\.google\.com\/.*\/d\/([^\/\?]+)/
+  ];
+  for(const p of patterns){const m=url.match(p);if(m)return`https://drive.google.com/uc?export=view&id=${m[1]}`;}
+  return url;
+}
+
+function createMediaUploader(containerId,opts={}){
+  const{label='Image',accept='image/*',onValue=null,initialValue='',maxSizeMB=4}=opts;
+  const wrap=document.getElementById(containerId);
+  if(!wrap)return;
+  let currentValue=initialValue||'';
+  const emptyHtml=`<div class="mu-empty"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>No image set</span></div>`;
+  const previewHtml=currentValue?`<img src="${currentValue}" alt="preview" onerror="this.style.display='none'"/><button class="mu-clear-btn" onclick="muClear('${containerId}')" title="Remove"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`:emptyHtml;
+  wrap.innerHTML=`
+    <div class="mu-preview" id="${containerId}-preview">${previewHtml}</div>
+    <div class="mu-tabs">
+      <button class="mu-tab active" onclick="muSwitchTab('${containerId}','upload',this)">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;margin-right:4px;vertical-align:middle;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload from PC
+      </button>
+      <button class="mu-tab" onclick="muSwitchTab('${containerId}','drive',this)">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;margin-right:4px;vertical-align:middle;"><path d="M22 12H2M22 12l-4-4M22 12l-4 4"/></svg>Google Drive / URL
+      </button>
+    </div>
+    <div class="mu-body">
+      <div id="${containerId}-tab-upload">
+        <div class="mu-drop-zone" id="${containerId}-dropzone">
+          <input type="file" accept="${accept}" onchange="muFileChange('${containerId}',this)" id="${containerId}-fileinput"/>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <div class="mu-drop-title">Drag &amp; drop or click to browse</div>
+          <div class="mu-drop-sub">PNG, JPG, SVG, WEBP — max ${maxSizeMB}MB</div>
+        </div>
+        <div class="mu-progress" id="${containerId}-progress"></div>
+        <div class="mu-size-warn" id="${containerId}-warn">File too large. Please use Google Drive link for files over ${maxSizeMB}MB.</div>
+      </div>
+      <div id="${containerId}-tab-drive" style="display:none;">
+        <div class="mu-url-row">
+          <input id="${containerId}-urlinput" placeholder="Paste Google Drive share link or any direct image URL..."/>
+          <button class="mu-url-btn" onclick="muApplyUrl('${containerId}')">Apply</button>
+        </div>
+        <div class="mu-hint">
+          Google Drive: Open file → Share → "Anyone with link" → paste link here<br>
+          Or paste any direct image URL ending in .jpg .png .svg .webp
+        </div>
+      </div>
+    </div>`;
+  muInstances[containerId]={value:currentValue,onValue,maxSizeMB};
+  const dz=document.getElementById(`${containerId}-dropzone`);
+  if(dz){
+    dz.addEventListener('dragover',e=>{e.preventDefault();wrap.classList.add('drag-over');});
+    dz.addEventListener('dragleave',()=>wrap.classList.remove('drag-over'));
+    dz.addEventListener('drop',e=>{e.preventDefault();wrap.classList.remove('drag-over');const file=e.dataTransfer.files[0];if(file)muProcessFile(containerId,file);});
+  }
+}
+
+function muSwitchTab(id,tab,btn){
+  document.querySelectorAll(`#${id} .mu-tab`).forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  const u=document.getElementById(`${id}-tab-upload`);
+  const d=document.getElementById(`${id}-tab-drive`);
+  if(u)u.style.display=tab==='upload'?'block':'none';
+  if(d)d.style.display=tab==='drive'?'block':'none';
+}
+
+function muFileChange(id,input){if(input.files&&input.files[0])muProcessFile(id,input.files[0]);}
+
+function muProcessFile(id,file){
+  const inst=muInstances[id];if(!inst)return;
+  const warn=document.getElementById(`${id}-warn`);
+  const prog=document.getElementById(`${id}-progress`);
+  if(file.size>inst.maxSizeMB*1024*1024){if(warn)warn.style.display='block';return;}
+  if(warn)warn.style.display='none';
+  if(prog){prog.style.display='block';prog.style.width='0%';}
+  const reader=new FileReader();
+  reader.onprogress=e=>{if(e.lengthComputable&&prog)prog.style.width=(e.loaded/e.total*100)+'%';};
+  reader.onload=e=>{if(prog){prog.style.width='100%';setTimeout(()=>prog.style.display='none',600);}muSetValue(id,e.target.result);};
+  reader.readAsDataURL(file);
+}
+
+function muApplyUrl(id){
+  const inp=document.getElementById(`${id}-urlinput`);
+  if(!inp||!inp.value.trim())return;
+  muSetValue(id,gdriveDirect(inp.value.trim()));
+}
+
+function muSetValue(id,url){
+  const inst=muInstances[id];if(!inst)return;
+  inst.value=url;
+  const preview=document.getElementById(`${id}-preview`);
+  if(preview){
+    preview.innerHTML=`<img src="${url}" alt="preview" onerror="this.style.opacity='.3'"/><button class="mu-clear-btn" onclick="muClear('${id}')" title="Remove"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+  }
+  if(inst.onValue)inst.onValue(url);
+}
+
+function muClear(id){
+  const inst=muInstances[id];if(!inst)return;
+  inst.value='';
+  const preview=document.getElementById(`${id}-preview`);
+  const emptyHtml=`<div class="mu-empty"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>No image set</span></div>`;
+  if(preview)preview.innerHTML=emptyHtml;
+  if(inst.onValue)inst.onValue('');
+}
+
+function muGetValue(id){return muInstances[id]?.value||'';}
+
+// ── BRANDING ──────────────────────────────────
+function loadBranding(){
+  const d=D(); const b=d.branding||{};
+  createMediaUploader('mu-logo',{label:'BPI Logo',initialValue:b.logoUrl||'',maxSizeMB:4});
+  document.getElementById('brandName').value=b.name||'B Polytechnic Institute';
+  document.getElementById('brandSub').value=b.sub||'Pvt. Ltd. · CTEVT Affiliated';
+  document.getElementById('brandNep').value=b.nep||'सीप सिकौं, आत्मनिर्भर बनौं, भविष्य सुरक्षित गरौं।';
+  document.getElementById('brandTitle').value=b.title||'B Polytechnic Institute Pvt. Ltd.';
+}
+function saveBranding(){
+  const d=D();
+  d.branding={
+    logoUrl:muGetValue('mu-logo'),
+    name:document.getElementById('brandName').value,
+    sub:document.getElementById('brandSub').value,
+    nep:document.getElementById('brandNep').value,
+    title:document.getElementById('brandTitle').value
+  };
+  saveD(d);toast('Branding saved!','success');
+}
+
+// ── SOCIAL MEDIA ──────────────────────────────
+const SOC_DEFAULTS={fb:'https://facebook.com/bpihm',ig:'https://instagram.com/bpi.nepal',tt:'https://tiktok.com/@bpi.nepal',x:'https://x.com/bpinepal',yt:'https://youtube.com/@bpi-np',li:'https://linkedin.com/company/bpinepal'};
+function loadSocial(){
+  const d=D(); const s=d.social||SOC_DEFAULTS;
+  document.getElementById('sm_fb').value=s.fb||'';
+  document.getElementById('sm_ig').value=s.ig||'';
+  document.getElementById('sm_tt').value=s.tt||'';
+  document.getElementById('sm_x').value=s.x||'';
+  document.getElementById('sm_yt').value=s.yt||'';
+  document.getElementById('sm_li').value=s.li||'';
+}
+function saveSocial(){
+  const d=D();
+  d.social={fb:document.getElementById('sm_fb').value,ig:document.getElementById('sm_ig').value,tt:document.getElementById('sm_tt').value,x:document.getElementById('sm_x').value,yt:document.getElementById('sm_yt').value,li:document.getElementById('sm_li').value};
+  saveD(d);toast('Social links saved!','success');
+}
+
+// ── LOCATION ──────────────────────────────────
+const LOC_DEFAULTS={loc1_city:'Sukedhara, Kathmandu',loc1_province:'Bagmati Province',loc1_addr:'Sukedhara, Kathmandu, Bagmati Province, Nepal',loc1_map:'',loc2_city:'Dhangadhi-1, Kailali',loc2_province:'Sudurpashchim Province',loc2_addr:'Dhangadhi-1, Kailali, Sudurpashchim Province, Nepal',loc2_map:'',phone1:'+977-91-524485',phone2:'+977-9868558730',email1:'bpinepal20@gmail.com',email2:'beepolytechnic@gmail.com',hours:'Sunday–Friday, 9AM–5PM'};
+function loadLocation(){
+  const d=D(); const l=d.location||LOC_DEFAULTS;
+  document.getElementById('loc1_city').value=l.loc1_city||'';
+  document.getElementById('loc1_province').value=l.loc1_province||'';
+  document.getElementById('loc1_addr').value=l.loc1_addr||'';
+  document.getElementById('loc1_map').value=l.loc1_map||'';
+  document.getElementById('loc2_city').value=l.loc2_city||'';
+  document.getElementById('loc2_province').value=l.loc2_province||'';
+  document.getElementById('loc2_addr').value=l.loc2_addr||'';
+  document.getElementById('loc2_map').value=l.loc2_map||'';
+  document.getElementById('loc_phone1').value=l.phone1||'';
+  document.getElementById('loc_phone2').value=l.phone2||'';
+  document.getElementById('loc_email1').value=l.email1||'';
+  document.getElementById('loc_email2').value=l.email2||'';
+  document.getElementById('loc_hours').value=l.hours||'';
+}
+function saveLocation(){
+  const d=D();
+  d.location={
+    loc1_city:document.getElementById('loc1_city').value,
+    loc1_province:document.getElementById('loc1_province').value,
+    loc1_addr:document.getElementById('loc1_addr').value,
+    loc1_map:document.getElementById('loc1_map').value,
+    loc2_city:document.getElementById('loc2_city').value,
+    loc2_province:document.getElementById('loc2_province').value,
+    loc2_addr:document.getElementById('loc2_addr').value,
+    loc2_map:document.getElementById('loc2_map').value,
+    phone1:document.getElementById('loc_phone1').value,
+    phone2:document.getElementById('loc_phone2').value,
+    email1:document.getElementById('loc_email1').value,
+    email2:document.getElementById('loc_email2').value,
+    hours:document.getElementById('loc_hours').value
+  };
+  saveD(d);toast('Location & contact details saved!','success');
+}
+
+// ── CONFIRM DIALOG ────────────────────────────
+let confirmCb=null;
+function confirmDel(title,msg,cb){
+  document.getElementById('confirmTitle').textContent=title;document.getElementById('confirmMsg').textContent=msg||'This action cannot be undone.';
+  confirmCb=cb;document.getElementById('confirmOv').classList.add('on');
+}
+function closeConfirm(){document.getElementById('confirmOv').classList.remove('on');confirmCb=null;}
+document.getElementById('confirmOk').onclick=()=>{if(confirmCb)confirmCb();closeConfirm();};
+
+// ── EXPORT ────────────────────────────────────
+function exportData(){
+  const data=JSON.stringify(D(),null,2);const b=new Blob([data],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='bpi-site-data.json';a.click();
+  toast('Data exported!','success');
+}
+
+// ── RESET ─────────────────────────────────────
+function resetToDefaults(){
+  confirmDel('Reset all content?','This will restore all site content to the original defaults. All your changes will be lost.',()=>{
+    localStorage.removeItem('bpiSiteData');updateDashboard();toast('Content reset to defaults.','info');loadSection('dashboard');navTo('dashboard');
+  });
+}
+
+// ── TOAST ─────────────────────────────────────
+function toast(msg,type='success'){
+  const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' on';
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),3500);
+}
+
+// ── INIT ──────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async ()=>{
+  const isAuth = await checkAuth();
+  if(isAuth) {
+    document.getElementById('loginOverlay').style.display = 'none';
+  }
+  await loadDynamicData();
+  updateDashboard();
+});
+</script>
+</body>
+</html>
