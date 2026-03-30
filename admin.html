@@ -223,8 +223,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 <div id="loginOverlay" style="position:fixed;inset:0;background:var(--bg);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;">
   <div class="card" style="width:100%;max-width:360px;">
     <div class="card-head" style="justify-content:center;font-size:1.2rem;margin-bottom:24px;">BPI Admin Login</div>
-    <div class="fg"><label>Username</label><input id="loginUser" type="text" placeholder="admin" style="background:var(--bg2)"/></div>
-    <div class="fg"><label>Password</label><input id="loginPass" type="password" placeholder="••••••••" style="background:var(--bg2)"/></div>
+    <div class="fg"><label>Username</label><input id="loginUser" type="text" style="background:var(--bg2)"/></div>
+    <div class="fg"><label>Password</label><input id="loginPass" type="password" style="background:var(--bg2)"/></div>
     <button class="btn-save" style="width:100%;margin-top:20px;justify-content:center;" onclick="doLogin()">Login</button>
   </div>
 </div>
@@ -513,9 +513,18 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
           <label style="display:block;font-size:.72rem;font-weight:600;color:rgba(255,255,255,.45);letter-spacing:.05em;margin-bottom:8px;">Course Photo</label>
           <div id="mu-course" class="mu-wrap"></div>
         </div>
-        <div class="fg">
-          <label>Contact Email for Apply</label>
-          <input id="c_contact" placeholder="bpinepal20@gmail.com"/>
+        <div class="fr2">
+          <div class="fg">
+            <label>Contact Email for Apply</label>
+            <input id="c_contact" placeholder="bpinepal20@gmail.com"/>
+          </div>
+          <div class="fg">
+            <label>Status</label>
+            <select id="c_status">
+              <option value="Published">Published</option>
+              <option value="Draft">Draft</option>
+            </select>
+          </div>
         </div>
         <div class="save-bar">
           <button class="btn-save" onclick="saveCourse()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save & Publish</button>
@@ -709,6 +718,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
           <div class="fg"><label>Primary Email</label><input id="loc_email1" placeholder="bpinepal20@gmail.com"/></div>
           <div class="fg"><label>Secondary Email</label><input id="loc_email2" placeholder="beepolytechnic@gmail.com"/></div>
         </div>
+        <div class="fg"><label>Enquiry Receiving Email</label><input id="loc_contactEmail" placeholder="enquiry@bpinepal.com"/></div>
         <div class="fg"><label>Office Hours</label><input id="loc_hours" placeholder="Sunday–Friday, 9AM–5PM"/></div>
         <div class="save-bar"><button class="btn-save" onclick="saveLocation()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save Location &amp; Contact Details</button></div>
       </div>
@@ -1000,15 +1010,15 @@ function loadCourses(){
 function openCourseForm(i){
   document.getElementById('courseForm').style.display='block';document.getElementById('courseIdx').value=i;
   document.getElementById('courseFormLabel').textContent=i<0?'Add New Course':'Edit Course';
-  if(i>=0){const c=D().courses[i];document.getElementById('c_title').value=c.title;document.getElementById('c_cat').value=c.category;document.getElementById('c_desc').value=c.desc;document.getElementById('c_fee').value=c.fee;document.getElementById('c_dur').value=c.duration;document.getElementById('c_badge').value=c.badge;document.getElementById('c_contact').value=c.contact||'';createMediaUploader('mu-course',{label:'Course Photo',initialValue:c.img||'',maxSizeMB:4});}
-  else{['c_title','c_desc','c_fee','c_dur','c_contact'].forEach(id=>document.getElementById(id).value='');document.getElementById('c_cat').value='Construction';document.getElementById('c_badge').value='CTEVT';createMediaUploader('mu-course',{label:'Course Photo',initialValue:'',maxSizeMB:4});}
+  if(i>=0){const c=D().courses[i];document.getElementById('c_title').value=c.title;document.getElementById('c_cat').value=c.category;document.getElementById('c_desc').value=c.desc;document.getElementById('c_fee').value=c.fee;document.getElementById('c_dur').value=c.duration;document.getElementById('c_badge').value=c.badge;document.getElementById('c_contact').value=c.contact||'';document.getElementById('c_status').value=c.status||'Published';createMediaUploader('mu-course',{label:'Course Photo',initialValue:c.img||'',maxSizeMB:4});}
+  else{['c_title','c_desc','c_fee','c_dur','c_contact'].forEach(id=>document.getElementById(id).value='');document.getElementById('c_cat').value='Construction';document.getElementById('c_badge').value='CTEVT';document.getElementById('c_status').value='Published';createMediaUploader('mu-course',{label:'Course Photo',initialValue:'',maxSizeMB:4});}
 }
 function closeCourseForm(){document.getElementById('courseForm').style.display='none';}
 // previewImg removed - using MediaUploader
 function saveCourse(){
   const t=document.getElementById('c_title').value.trim();if(!t){toast('Course title required.','error');return;}
   const d=D();
-  const course={title:t,category:document.getElementById('c_cat').value,desc:document.getElementById('c_desc').value,fee:document.getElementById('c_fee').value,duration:document.getElementById('c_dur').value,badge:document.getElementById('c_badge').value,img:muGetValue('mu-course'),contact:document.getElementById('c_contact').value};
+  const course={title:t,category:document.getElementById('c_cat').value,desc:document.getElementById('c_desc').value,fee:document.getElementById('c_fee').value,duration:document.getElementById('c_dur').value,badge:document.getElementById('c_badge').value,img:muGetValue('mu-course'),contact:document.getElementById('c_contact').value,status:document.getElementById('c_status').value};
   const idx=parseInt(document.getElementById('courseIdx').value);
   if(idx>=0) d.courses[idx]=course; else d.courses.push(course);
   saveD(d);closeCourseForm();loadCourses();toast('Course saved & published!','success');
@@ -1212,7 +1222,28 @@ function muProcessFile(id,file){
   if(prog){prog.style.display='block';prog.style.width='0%';}
   const reader=new FileReader();
   reader.onprogress=e=>{if(e.lengthComputable&&prog)prog.style.width=(e.loaded/e.total*100)+'%';};
-  reader.onload=e=>{if(prog){prog.style.width='100%';setTimeout(()=>prog.style.display='none',600);}muSetValue(id,e.target.result);};
+  reader.onload=async e=>{
+    if(prog){prog.style.width='100%';setTimeout(()=>prog.style.display='none',600);}
+    const base64 = e.target.result;
+    const token = localStorage.getItem('bpiAdminToken');
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ filename: file.name, base64 })
+      });
+      if(res.ok) {
+        const data = await res.json();
+        muSetValue(id, data.url);
+      } else {
+        toast('Failed to upload image', 'error');
+        muSetValue(id, base64); // Fallback to base64 if upload fails
+      }
+    } catch(err) {
+      toast('Upload error', 'error');
+      muSetValue(id, base64);
+    }
+  };
   reader.readAsDataURL(file);
 }
 
@@ -1297,6 +1328,7 @@ function loadLocation(){
   document.getElementById('loc_phone2').value=l.phone2||'';
   document.getElementById('loc_email1').value=l.email1||'';
   document.getElementById('loc_email2').value=l.email2||'';
+  document.getElementById('loc_contactEmail').value=l.contactEmail||'';
   document.getElementById('loc_hours').value=l.hours||'';
 }
 function saveLocation(){
@@ -1314,6 +1346,7 @@ function saveLocation(){
     phone2:document.getElementById('loc_phone2').value,
     email1:document.getElementById('loc_email1').value,
     email2:document.getElementById('loc_email2').value,
+    contactEmail:document.getElementById('loc_contactEmail').value,
     hours:document.getElementById('loc_hours').value
   };
   saveD(d);toast('Location & contact details saved!','success');

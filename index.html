@@ -2651,26 +2651,7 @@
       <a href="#" class="logo">
         <div class="logo-mark">
           <!-- Animated BPI Logo Mark — "b" with oval swoosh -->
-          <svg class="logo-mark-svg" width="48" height="52" viewBox="0 0 120 130" fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <!-- Outer oval swoosh — draws itself on load -->
-            <ellipse class="swoosh-path" cx="60" cy="60" rx="55" ry="38" stroke="#6B1212" stroke-width="7" fill="none"
-              stroke-linecap="round" transform="rotate(-12 60 60)" />
-            <!-- Inner swoosh accent -->
-            <path class="swoosh-path" d="M18 72 Q42 92 80 68 Q105 50 95 30" stroke="#8B2020" stroke-width="4.5"
-              fill="none" stroke-linecap="round"
-              style="animation-delay:.25s;stroke-dasharray:200;stroke-dashoffset:200;" />
-            <!-- "b" lettermark -->
-            <g class="b-letter">
-              <path d="M47 24 L47 82" stroke="#6B1212" stroke-width="9" stroke-linecap="round" />
-              <path d="M47 50 Q47 40 57 40 Q74 40 74 60 Q74 80 57 80 Q47 80 47 70" stroke="#6B1212" stroke-width="8.5"
-                fill="none" stroke-linecap="round" stroke-linejoin="round" />
-            </g>
-            <!-- "POLYTECHNIC INSTITUTE" text below -->
-            <text x="60" y="118" text-anchor="middle" font-family="'Outfit', sans-serif" font-size="10"
-              font-weight="700" letter-spacing="1.5" fill="#6B1212" class="b-letter"
-              style="animation-delay:.85s;">POLYTECHNIC INSTITUTE</text>
-          </svg>
+          <img id="logo1" alt="BPI Logo" style="width:100%;height:100%;object-fit:contain;" />
         </div>
         <div class="logo-text">
           <div class="name">B Polytechnic Institute</div>
@@ -2683,7 +2664,7 @@
           <button class="nav-link active" onclick="scrollTo('home')">Home</button>
         </div>
         <div class="nav-item">
-          <button class="nav-link" onclick="scrollTo('about')">
+          <button class="nav-link">
             About
             <svg class="chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
               <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
@@ -2737,7 +2718,7 @@
           <button class="nav-link" onclick="scrollTo('courses')">Training Courses</button>
         </div>
         <div class="nav-item">
-          <button class="nav-link" onclick="scrollTo('rojgaar')">
+          <button class="nav-link">
             BPI–Rojgaar
             <svg class="chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
               <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
@@ -3217,40 +3198,17 @@
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
               <circle cx="12" cy="10" r="3" />
             </svg></div>
-          <div>
-            <h4>Our Offices</h4>
-            <p><strong style="font-size:.78rem;color:var(--maroon);font-weight:600;">Main Office</strong><br>Sukedhara,
-              Kathmandu, Bagmati Province</p>
-            <p style="margin-top:8px;"><strong style="font-size:.78rem;color:var(--navy);font-weight:600;">Registered
-                Office</strong><br>Dhangadhi-1, Kailali, Sudurpashchim Province</p>
-            <p style="margin-top:8px;color:var(--maroon);font-weight:500;font-size:.8rem;">Open: Sunday–Friday, 9AM–5PM
-            </p>
+          <div id="officesBox">
           </div>
         </div>
         <div class="c-box reveal stagger-2">
-          <div class="c-box-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="1.8">
-              <path
-                d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 11.5a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .84h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.18a16 16 0 006.59 6.59l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 15.92z" />
-            </svg></div>
-          <div>
-            <h4>Call / WhatsApp</h4>
-            <a href="tel:+97791524485">+977-91-524485 (Dhangadhi)</a><br>
-            <a href="tel:+9779868558730">+977-9868558730 (President)</a>
-            <p style="margin-top:8px;font-size:.8rem;">Walk-ins welcome — no appointment needed.</p>
+          <div class="c-box-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 11.5a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .84h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.18a16 16 0 006.59 6.59l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 15.92z"/></svg></div>
+          <div id="phonesBox">
           </div>
         </div>
         <div class="c-box reveal stagger-3">
-          <div class="c-box-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="1.8">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-              <polyline points="22,6 12,13 2,6" />
-            </svg></div>
-          <div>
-            <h4>Email Us</h4>
-            <a href="mailto:bpinepal20@gmail.com">bpinepal20@gmail.com</a><br>
-            <a href="mailto:beepolytechnic@gmail.com">beepolytechnic@gmail.com</a>
-            <p style="margin-top:8px;font-size:.8rem;">For admissions, partnerships &amp; counselling bookings.</p>
+          <div class="c-box-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+          <div id="emailsBox">
             <button class="btn-primary" onclick="openApply(null)" style="margin-top:14px;font-size:.8rem;">
               Apply Now
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -3269,19 +3227,7 @@
       <div class="ft-brand">
         <div class="logo" style="margin-bottom:0;">
           <div class="logo-mark" style="width:44px;height:48px;">
-            <svg class="logo-mark-svg" width="44" height="48" viewBox="0 0 120 130" fill="none"
-              xmlns="http://www.w3.org/2000/svg" style="animation-delay:.3s;">
-              <ellipse class="swoosh-path" cx="60" cy="60" rx="55" ry="38" stroke="rgba(201,168,76,0.7)"
-                stroke-width="7" fill="none" stroke-linecap="round" transform="rotate(-12 60 60)" />
-              <path class="swoosh-path" d="M18 72 Q42 92 80 68 Q105 50 95 30" stroke="rgba(226,201,122,0.5)"
-                stroke-width="4.5" fill="none" stroke-linecap="round"
-                style="animation-delay:.4s;stroke-dasharray:200;stroke-dashoffset:200;" />
-              <g class="b-letter" style="animation-delay:.9s;">
-                <path d="M47 24 L47 82" stroke="rgba(226,201,122,0.9)" stroke-width="9" stroke-linecap="round" />
-                <path d="M47 50 Q47 40 57 40 Q74 40 74 60 Q74 80 57 80 Q47 80 47 70" stroke="rgba(226,201,122,0.9)"
-                  stroke-width="8.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-              </g>
-            </svg>
+            <img id="logo2" alt="BPI Logo" style="width:100%;height:100%;object-fit:contain;" />
           </div>
           <div class="logo-text">
             <div class="name" style="color:white;">B Polytechnic Institute</div>
@@ -3649,7 +3595,8 @@
     function renderCourses(filter) {
       const d = D(); const el = document.getElementById('coursesGrid');
       if (!el) return;
-      const list = filter && filter !== 'all' ? d.courses.filter(c => c.category === filter) : d.courses;
+      const published = d.courses.filter(c => (!c.status || c.status === 'Published'));
+      const list = filter && filter !== 'all' ? published.filter(c => c.category === filter) : published;
       el.innerHTML = list.map((c, i) => `<div class="c-card reveal stagger-${(i % 3) + 1}">
     <div class="c-img" style="${c.img ? `background-image:url('${c.img}');background-size:cover;` : `background-color:${phColors[i % phColors.length]};`}">
       ${!c.img ? `<div class="c-img-ph"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>` : ''}
@@ -3674,6 +3621,36 @@
   </div>`).join('');
       // Re-observe for reveal
       setTimeout(() => document.querySelectorAll('.reveal:not(.visible)').forEach(el => observer.observe(el)), 50);
+    }
+    
+    function renderContact() {
+      const l = D().location || {};
+      const encodeMap = (url) => { if (!url) return ''; const query = new URL(url).searchParams.get('q'); return query ? `https://maps.google.com/maps?q=${encodeURI(query)}&t=&z=14&ie=UTF8&iwloc=&output=embed` : url; };
+
+      document.getElementById('officesBox').innerHTML = `
+        <h4>Our Offices</h4>
+        <p><strong style="font-size:.78rem;color:var(--maroon);font-weight:600;">Main Office</strong><br>${l.loc1?.city || 'Sukedhara, Kathmandu'}, ${l.loc1?.prov || 'Bagmati Province'}</p>
+        ${l.loc1?.map ? `<iframe src="${encodeMap(l.loc1.map)}" width="100%" height="120" style="border:0;border-radius:8px;margin-top:8px;" allowfullscreen="" loading="lazy"></iframe>` : ''}
+        
+        <p style="margin-top:12px;"><strong style="font-size:.78rem;color:var(--navy);font-weight:600;">Registered Office</strong><br>${l.loc2?.city || 'Dhangadhi-1, Kailali'}, ${l.loc2?.prov || 'Sudurpashchim Province'}</p>
+        ${l.loc2?.map ? `<iframe src="${encodeMap(l.loc2.map)}" width="100%" height="120" style="border:0;border-radius:8px;margin-top:8px;" allowfullscreen="" loading="lazy"></iframe>` : ''}
+        
+        <p style="margin-top:12px;color:var(--maroon);font-weight:500;font-size:.8rem;">Open: ${l.hours || 'Sunday–Friday, 9AM–5PM'}</p>
+      `;
+
+      document.getElementById('phonesBox').innerHTML = `
+        <h4>Call / WhatsApp</h4>
+        <a href="tel:${l.phone1 || '+977-91-524485'}">${l.phone1 || '+977-91-524485'}</a><br>
+        <a href="tel:${l.phone2 || '+977-9868558730'}">${l.phone2 || '+977-9868558730'}</a>
+        <p style="margin-top:8px;font-size:.8rem;">Walk-ins welcome — no appointment needed.</p>
+      `;
+
+      document.getElementById('emailsBox').innerHTML = `
+        <h4>Email Us</h4>
+        <a href="mailto:${l.contactEmail || 'bpinepal20@gmail.com'}">${l.contactEmail || 'bpinepal20@gmail.com'}</a><br>
+        <a href="mailto:${l.contactEmail2 || 'beepolytechnic@gmail.com'}">${l.contactEmail2 || 'beepolytechnic@gmail.com'}</a>
+        <p style="margin-top:8px;font-size:.8rem;">For admissions, partnerships & counselling bookings.</p>
+      `;
     }
     function filterCourses(f, btn) {
       renderCourses(f);
@@ -3713,11 +3690,34 @@
       document.body.style.overflow = 'hidden';
     }
     function closeApply() { document.getElementById('applyModal').classList.remove('on'); document.body.style.overflow = ''; }
-    function submitApply() {
+    async function submitApply() {
       const n = document.getElementById('aName').value.trim();
       const p = document.getElementById('aPhone').value.trim();
+      const loc = document.getElementById('aLoc').value.trim();
+      const msg = document.getElementById('aMsg').value.trim();
+      const course = document.getElementById('applyFor').textContent;
       if (!n || !p) { showToast('कृपया आफ्नो नाम र फोन नम्बर भर्नुहोस्।'); return; }
-      closeApply(); showToast('निवेदन पठाइयो! BPI ले चाँडै सम्पर्क गर्नेछ।');
+      const btn = document.querySelector('#applyModal .btn-primary');
+      const ogHtml = btn.innerHTML;
+      btn.innerHTML = 'Sending...';
+      btn.disabled = true;
+      try {
+        const res = await fetch('/api/enquiry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: n, phone: p, location: loc, course, message: msg })
+        });
+        if(res.ok) {
+          closeApply(); showToast('निवेदन पठाइयो! BPI ले चाँडै सम्पर्क गर्नेछ।');
+        } else {
+          showToast('Failed to send enquiry. Please try again.');
+        }
+      } catch (e) {
+        showToast('Network error.');
+      } finally {
+        btn.innerHTML = ogHtml;
+        btn.disabled = false;
+      }
     }
     document.getElementById('applyModal').addEventListener('click', function (e) { if (e.target === this) closeApply(); });
 
@@ -3816,6 +3816,16 @@
       });
     }
 
+    function renderBranding() {
+      const b = D().branding;
+      if (b && b.logo) {
+        const logo1 = document.getElementById('logo1');
+        const logo2 = document.getElementById('logo2');
+        if (logo1) logo1.src = b.logo;
+        if (logo2) logo2.src = b.logo;
+      }
+    }
+
     // ── CONTACT FAB ───────────────────────────────
     let fabOpen = false;
     function toggleContactFab(forceState) {
@@ -3840,7 +3850,7 @@
     // ── INIT ──────────────────────────────────────
     document.addEventListener('DOMContentLoaded', async () => {
       await loadDynamicData();
-      loadAnn(); renderHero(); renderHistory(); renderServices(); renderPartners(); renderGallery(); renderCourses();
+      renderBranding(); loadAnn(); renderHero(); renderHistory(); renderServices(); renderPartners(); renderGallery(); renderCourses(); renderContact();
       initReveal(); initNotifications();
       slideTimer = setInterval(() => showSlide(curSlide + 1), 5500);
     });
