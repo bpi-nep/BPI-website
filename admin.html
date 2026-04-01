@@ -6,6 +6,7 @@
 <title>BPI Admin — Content Management Panel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet"/>
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet"/>
 <style>
 :root{
   --bg:#0E1117; --bg2:#161B24; --bg3:#1E2530; --bg4:#252D3A;
@@ -854,8 +855,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
         </div>
         <div class="fg">
           <label>Content</label>
-          <textarea id="bl_content" style="min-height:160px;" placeholder="Write the article content here..."></textarea>
-          <small style="color:var(--muted);font-size:.72rem;margin-top:4px;display:block;">Basic HTML tags supported: &lt;b&gt;, &lt;i&gt;, &lt;h3&gt;, &lt;br&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;a href&gt;</small>
+          <div id="editor-container" style="height:300px;background:#fff;color:#000;border-radius:0 0 8px 8px;"></div>
+          <small style="color:var(--muted);font-size:.72rem;margin-top:4px;display:block;">Use the toolbar above to format text, add images, headings, and links.</small>
         </div>
         <div class="fg"><label>SEO Meta Description</label><textarea id="bl_metaDesc" placeholder="Short description for search engines (150 chars max)..."></textarea></div>
         <div class="save-bar">
@@ -1655,13 +1656,14 @@ function openBlogForm(i){
     document.getElementById('bl_title').value=p.title||'';
     document.getElementById('bl_author').value=p.author||'BPI Admin';
     document.getElementById('bl_status').value=p.status||'Published';
-    document.getElementById('bl_content').value=p.content||'';
+    quill.root.innerHTML=p.content||'';
     document.getElementById('bl_metaDesc').value=p.metaDesc||'';
     createMediaUploader('mu-blog',{label:'Cover Image',initialValue:p.coverImg||'',maxSizeMB:4});
   } else {
-    ['bl_title','bl_content','bl_metaDesc'].forEach(id=>document.getElementById(id).value='');
+    ['bl_title','bl_metaDesc'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('bl_author').value='BPI Admin';
     document.getElementById('bl_status').value='Published';
+    quill.root.innerHTML='';
     createMediaUploader('mu-blog',{label:'Cover Image',initialValue:'',maxSizeMB:4});
   }
 }
@@ -1677,7 +1679,7 @@ async function saveBlog(){
     title,
     author:document.getElementById('bl_author').value||'BPI Admin',
     status:document.getElementById('bl_status').value,
-    content:document.getElementById('bl_content').value,
+    content:quill.root.innerHTML,
     metaDesc:document.getElementById('bl_metaDesc').value,
     coverImg:muGetValue('mu-blog'),
     publishDate:idx>=0?(d.blog[idx].publishDate||now):now
@@ -1754,6 +1756,22 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   }
   await loadDynamicData();
   updateDashboard();
+});
+</script>
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<script>
+// Quill Editor Init
+const quill = new Quill('#editor-container', {
+  theme: 'snow',
+  modules: {
+    toolbar: [
+      [{ 'header': [1, 2, 3, false] }],
+      [{ 'align': [] }],
+      ['bold', 'italic', 'underline'],
+      ['image', 'link', 'blockquote', 'code-block'],
+      [{'list': 'ordered'}, {'list': 'bullet'}]
+    ]
+  }
 });
 </script>
 </body>
