@@ -5,6 +5,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>B Polytechnic Institute Pvt. Ltd. — Dhangadhi, Kailali</title>
+  <meta name="description" id="metaDesc" content="B Polytechnic Institute (BPI) — CTEVT-affiliated vocational training institute in Dhangadhi, Kailali and Kathmandu. TVET courses, career counselling, and skill development since 2008." />
+  <meta name="keywords" id="metaKw" content="vocational training Nepal, CTEVT courses, BPI Dhangadhi, skill development, career counselling" />
+  <link rel="icon" id="favicon" href="" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Outfit:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap"
@@ -2628,6 +2631,166 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* ── BLOG SECTION ───────────────────────────────────────────── */
+    #blog { padding: 100px 0; background: var(--cream); }
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 26px;
+    }
+    .blog-card {
+      background: var(--white);
+      border: 1px solid var(--stone);
+      border-radius: 18px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all .28s;
+    }
+    .blog-card:hover {
+      box-shadow: 0 20px 56px rgba(107,18,18,.11);
+      transform: translateY(-7px);
+      border-color: transparent;
+    }
+    .blog-card-img {
+      height: 200px;
+      background: var(--warm);
+      overflow: hidden;
+      position: relative;
+    }
+    .blog-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .4s ease;
+    }
+    .blog-card:hover .blog-card-img img { transform: scale(1.05); }
+    .blog-card-img-ph {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--maroon-d), var(--navy));
+    }
+    .blog-card-body {
+      padding: 22px;
+    }
+    .blog-card-date {
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--gold-d);
+      margin-bottom: 8px;
+    }
+    .blog-card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.28;
+      margin-bottom: 10px;
+    }
+    .blog-card-snippet {
+      font-size: .83rem;
+      color: var(--muted);
+      line-height: 1.62;
+    }
+    .blog-card-read {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--maroon);
+      margin-top: 14px;
+      transition: gap .2s;
+    }
+    .blog-card:hover .blog-card-read { gap: 10px; }
+    @media(max-width:1024px) { .blog-grid { grid-template-columns: repeat(2,1fr); } }
+    @media(max-width:640px) { .blog-grid { grid-template-columns: 1fr; } }
+
+    /* ── ARTICLE MODAL ─────────────────────────────────────── */
+    #articleModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 6000;
+      background: rgba(13,31,60,.88);
+      backdrop-filter: blur(8px);
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 20px;
+      overflow-y: auto;
+    }
+    #articleModal.on { display: flex; }
+    .article-box {
+      background: var(--white);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 760px;
+      overflow: hidden;
+      animation: revealUp .35s ease;
+    }
+    .article-cover {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+      display: block;
+    }
+    .article-cover-ph {
+      width: 100%;
+      height: 220px;
+      background: linear-gradient(135deg,var(--maroon-d),var(--navy));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .article-body {
+      padding: 36px 40px 40px;
+    }
+    .article-meta {
+      font-size: .76rem;
+      color: var(--muted);
+      letter-spacing: .05em;
+      margin-bottom: 12px;
+    }
+    .article-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.6rem,3vw,2.2rem);
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .article-content {
+      font-size: .95rem;
+      line-height: 1.82;
+      color: var(--text);
+    }
+    .article-content h3 { font-family:'Cormorant Garamond',serif; font-size:1.3rem; color:var(--maroon); margin:20px 0 8px; }
+    .article-content b, .article-content strong { color:var(--ink); font-weight:600; }
+    .article-close {
+      display: block;
+      margin: 0 auto;
+      padding: 12px 32px;
+      background: var(--maroon);
+      border: none;
+      border-radius: 8px;
+      color: var(--white);
+      font-family: 'Outfit', sans-serif;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s;
+      margin-top: 28px;
+    }
+    .article-close:hover { background: var(--maroon-d); }
+    @media(max-width:640px) {
+      .article-body { padding: 24px 20px 28px; }
+      .article-cover { height:200px; }
+    }
   </style>
 </head>
 
@@ -2814,7 +2977,7 @@
 
   <!-- STATS -->
   <div class="stats">
-    <div class="stats-grid">
+    <div class="stats-grid" id="statsGrid">
       <div class="stat reveal stagger-1">
         <div class="stat-n" data-count="15">0</div>
         <div class="stat-l">Years of TVET Excellence</div>
@@ -3194,6 +3357,17 @@
     </div>
   </section>
 
+  <!-- BLOG & NEWS -->
+  <section id="blog">
+    <div class="wrap">
+      <div class="sec-hdr reveal" style="margin-bottom:48px;">
+        <div class="sec-eye">News &amp; Updates</div>
+        <h2 class="sec-title" id="blogSectionTitle">From the BPI Newsroom</h2>
+      </div>
+      <div id="blogGrid" class="blog-grid"></div>
+    </div>
+  </section>
+
   <!-- CONTACT -->
   <div class="contact-sec" id="contact">
     <div class="wrap">
@@ -3404,6 +3578,22 @@
     </button>
   </div>
 
+  <!-- ARTICLE MODAL -->
+  <div id="articleModal">
+    <div class="article-box" onclick="event.stopPropagation()">
+      <div id="articleCoverWrap"></div>
+      <div class="article-body">
+        <div class="article-meta" id="articleMeta"></div>
+        <div class="article-title" id="articleTitle"></div>
+        <div class="article-content" id="articleContent"></div>
+        <button class="article-close" onclick="closeArticle()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Close Article
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- APPLY MODAL -->
   <div class="modal-ov" id="applyModal">
     <div class="modal" onclick="event.stopPropagation()">
@@ -3477,6 +3667,13 @@
         phone2: "+977-9868558730",
         hours: "Sunday–Friday, 9AM–5PM"
       },
+      stats: [
+        {n:'15+', l:'Years of TVET Excellence'},
+        {n:'1,500+', l:'Trainees Skilled Since 2008'},
+        {n:'100+', l:'Training Events Delivered'},
+        {n:'6', l:'CTEVT Trade Sectors'}
+      ],
+      blog: [],
       notifications: []
     };
 
@@ -3636,7 +3833,7 @@
       <p class="c-desc">${c.desc}</p>
       <div class="c-meta">
         <span class="c-meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${c.duration}</span>
-        <span class="c-meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Dhangadhi</span>
+        <span class="c-meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${c.location || 'Dhangadhi'}</span>
       </div>
       <div class="c-foot">
         <div class="c-fee">${c.fee}<small>Training Fee</small></div>
@@ -3706,17 +3903,14 @@
 
     function renderContact() {
       const l = D().location || {};
-      const encodeMap = (url) => { if (!url) return ''; const query = new URL(url).searchParams.get('q'); return query ? `https://maps.google.com/maps?q=${encodeURI(query)}&t=&z=14&ie=UTF8&iwloc=&output=embed` : url; };
 
       document.getElementById('officesBox').innerHTML = `
         <h4>Our Offices</h4>
         <p><strong style="font-size:.78rem;color:var(--maroon);font-weight:600;">Main Office</strong><br>${l.loc1?.city || 'Sukedhara, Kathmandu'}, ${l.loc1?.prov || 'Bagmati Province'}</p>
-        ${l.loc1?.map ? `<iframe src="${encodeMap(l.loc1.map)}" width="100%" height="120" style="border:0;border-radius:8px;margin-top:8px;" allowfullscreen="" loading="lazy"></iframe>` : ''}
-        
-        <p style="margin-top:12px;"><strong style="font-size:.78rem;color:var(--navy);font-weight:600;">Registered Office</strong><br>${l.loc2?.city || 'Dhangadhi-1, Kailali'}, ${l.loc2?.prov || 'Sudurpashchim Province'}</p>
-        ${l.loc2?.map ? `<iframe src="${encodeMap(l.loc2.map)}" width="100%" height="120" style="border:0;border-radius:8px;margin-top:8px;" allowfullscreen="" loading="lazy"></iframe>` : ''}
-        
-        <p style="margin-top:12px;color:var(--maroon);font-weight:500;font-size:.8rem;">Open: ${l.hours || 'Sunday–Friday, 9AM–5PM'}</p>
+        ${l.loc1?.map ? `<a href="${l.loc1.map}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:7px 14px;background:rgba(62,8,8,.07);border:1px solid rgba(62,8,8,.15);border-radius:8px;font-size:.78rem;font-weight:600;color:var(--maroon);text-decoration:none;transition:all .2s;"><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z'/><circle cx='12' cy='10' r='3'/></svg>View on Google Maps</a>` : ''}
+        <p style="margin-top:14px;"><strong style="font-size:.78rem;color:var(--navy);font-weight:600;">Registered Office</strong><br>${l.loc2?.city || 'Dhangadhi-1, Kailali'}, ${l.loc2?.prov || 'Sudurpashchim Province'}</p>
+        ${l.loc2?.map ? `<a href="${l.loc2.map}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:7px 14px;background:rgba(13,31,60,.07);border:1px solid rgba(13,31,60,.15);border-radius:8px;font-size:.78rem;font-weight:600;color:var(--navy);text-decoration:none;transition:all .2s;"><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z'/><circle cx='12' cy='10' r='3'/></svg>View on Google Maps</a>` : ''}
+        <p style="margin-top:14px;color:var(--maroon);font-weight:500;font-size:.8rem;">Open: ${l.hours || 'Sunday–Friday, 9AM–5PM'}</p>
       `;
 
       document.getElementById('phonesBox').innerHTML = `
@@ -3730,7 +3924,7 @@
         <h4>Email Us</h4>
         <a href="mailto:${l.contactEmail || 'bpinepal20@gmail.com'}">${l.contactEmail || 'bpinepal20@gmail.com'}</a><br>
         <a href="mailto:${l.contactEmail2 || 'beepolytechnic@gmail.com'}">${l.contactEmail2 || 'beepolytechnic@gmail.com'}</a>
-        <p style="margin-top:8px;font-size:.8rem;">For admissions, partnerships & counselling bookings.</p>
+        <p style="margin-top:8px;font-size:.8rem;">For admissions, partnerships &amp; counselling bookings.</p>
       `;
     }
     function filterCourses(f, btn) {
@@ -3904,17 +4098,96 @@
         const logo2 = document.getElementById('logo2');
         if (logo1) logo1.src = b.logoUrl;
         if (logo2) logo2.src = b.logoUrl;
+        // Dynamic favicon
+        const fav = document.getElementById('favicon');
+        if (fav) fav.href = b.logoUrl;
       }
       if (b && b.title) document.title = b.title;
-      
+      // Dynamic SEO meta
+      if (b && b.metaDesc) {
+        const md = document.getElementById('metaDesc');
+        if (md) md.content = b.metaDesc;
+      }
+      if (b && b.keywords) {
+        const kw = document.getElementById('metaKw');
+        if (kw) kw.content = b.keywords;
+      }
       const names = document.querySelectorAll('.logo-text .name');
       const subs = document.querySelectorAll('.logo-text .sub');
       const neps = document.querySelectorAll('.nep-tag');
-      
       names.forEach(n => { if (b && b.name) n.textContent = b.name; });
       subs.forEach(s => { if (b && b.sub) s.textContent = b.sub; });
       neps.forEach(s => { if (b && b.nep) s.textContent = b.nep; });
     }
+
+    // ── STATS ───────────────────────────────────────
+    function renderStats() {
+      const stats = D().stats || DEFAULTS.stats;
+      const el = document.getElementById('statsGrid');
+      if (!el) return;
+      // Parse number for data-count animation
+      const toCount = (n) => parseInt(String(n).replace(/[^0-9]/g,'')) || 0;
+      el.innerHTML = stats.map((s, i) => {
+        const count = toCount(s.n);
+        const isK = count >= 1000;
+        return `<div class="stat reveal stagger-${i+1}">
+          <div class="stat-n"${count ? ` data-count="${count}"` : ''}>${ count ? '0' : s.n}</div>
+          <div class="stat-l">${s.l}</div>
+        </div>`;
+      }).join('');
+      // Re-observe newly rendered stats
+      setTimeout(() => document.querySelectorAll('.reveal:not(.visible)').forEach(el => observer.observe(el)), 50);
+    }
+
+    // ── BLOG ────────────────────────────────────────
+    function renderBlog() {
+      const d = D();
+      const posts = (d.blog || []).filter(p => p.status === 'Published');
+      const section = document.getElementById('blog');
+      const el = document.getElementById('blogGrid');
+      if (!el) return;
+      if (!posts.length) {
+        if (section) section.style.display = 'none';
+        return;
+      }
+      if (section) section.style.display = '';
+      el.innerHTML = posts.map((p, i) => {
+        const snippet = p.content ? p.content.replace(/<[^>]+>/g,'').slice(0,120) + '...' : '';
+        const dateStr = p.publishDate ? new Date(p.publishDate).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}) : '';
+        return `<div class="blog-card reveal stagger-${(i%3)+1}" onclick="openArticle(${i})">
+          <div class="blog-card-img">
+            ${p.coverImg ? `<img src="${p.coverImg}" alt="${p.title}" loading="lazy"/>` : `<div class="blog-card-img-ph"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>`}
+          </div>
+          <div class="blog-card-body">
+            ${dateStr ? `<div class="blog-card-date">${dateStr}</div>` : ''}
+            <div class="blog-card-title">${p.title}</div>
+            <div class="blog-card-snippet">${snippet}</div>
+            <span class="blog-card-read">Read More <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          </div>
+        </div>`;
+      }).join('');
+      setTimeout(() => document.querySelectorAll('.reveal:not(.visible)').forEach(el => observer.observe(el)), 50);
+    }
+
+    function openArticle(i) {
+      const d = D();
+      const posts = (d.blog || []).filter(p => p.status === 'Published');
+      const p = posts[i];
+      if (!p) return;
+      const dateStr = p.publishDate ? new Date(p.publishDate).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}) : '';
+      document.getElementById('articleCoverWrap').innerHTML = p.coverImg ? `<img class="article-cover" src="${p.coverImg}" alt="${p.title}"/>` : `<div class="article-cover-ph"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>`;
+      document.getElementById('articleMeta').textContent = `${dateStr}${p.author ? ' · ' + p.author : ''}`;
+      document.getElementById('articleTitle').textContent = p.title;
+      document.getElementById('articleContent').innerHTML = p.content || '';
+      const modal = document.getElementById('articleModal');
+      modal.classList.add('on');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeArticle() {
+      document.getElementById('articleModal').classList.remove('on');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('articleModal').addEventListener('click', function(e){ if(e.target===this) closeArticle(); });
 
     // ── CONTACT FAB ───────────────────────────────
     let fabOpen = false;
