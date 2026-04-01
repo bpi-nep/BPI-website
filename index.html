@@ -2887,14 +2887,14 @@
       </nav>
 
       <div class="hdr-cta">
-        <a href="tel:+9779868558730" class="btn-ghost">
+        <a id="hdrCallBtn" href="tel:+9779868558730" class="btn-ghost">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path
               d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 11.5a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .84h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.18a16 16 0 006.59 6.59l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 15.92z" />
           </svg>
           Call Now
         </a>
-        <button class="btn-primary" onclick="openApply(null)">
+        <button class="btn-primary" onclick="openApply('General Inquiry')">
           Apply Now
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M5 12h14M12 5l7 7-7 7" />
@@ -3875,12 +3875,24 @@
     function renderContact() {
       const l = D().location || {};
 
+      // Smart Map URL extractor — handles pasted <iframe> code
+      function extractMapUrl(raw) {
+        if (!raw) return '';
+        if (raw.includes('<iframe')) {
+          const match = raw.match(/src="([^"]+)"/);
+          if (match) return match[1];
+        }
+        return raw;
+      }
+      const map1 = extractMapUrl(l.loc1?.map);
+      const map2 = extractMapUrl(l.loc2?.map);
+
       document.getElementById('officesBox').innerHTML = `
         <h4>Our Offices</h4>
         <p><strong style="font-size:.78rem;color:var(--maroon);font-weight:600;">Main Office</strong><br>${l.loc1?.city || 'Sukedhara, Kathmandu'}, ${l.loc1?.prov || 'Bagmati Province'}</p>
-        ${l.loc1?.map ? `<a href="${l.loc1.map}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:7px 14px;background:rgba(62,8,8,.07);border:1px solid rgba(62,8,8,.15);border-radius:8px;font-size:.78rem;font-weight:600;color:var(--maroon);text-decoration:none;transition:all .2s;"><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z'/><circle cx='12' cy='10' r='3'/></svg>View on Google Maps</a>` : ''}
+        ${map1 ? `<a href="${map1}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:7px 14px;background:rgba(62,8,8,.07);border:1px solid rgba(62,8,8,.15);border-radius:8px;font-size:.78rem;font-weight:600;color:var(--maroon);text-decoration:none;transition:all .2s;"><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z'/><circle cx='12' cy='10' r='3'/></svg>View on Google Maps</a>` : ''}
         <p style="margin-top:14px;"><strong style="font-size:.78rem;color:var(--navy);font-weight:600;">Registered Office</strong><br>${l.loc2?.city || 'Dhangadhi-1, Kailali'}, ${l.loc2?.prov || 'Sudurpashchim Province'}</p>
-        ${l.loc2?.map ? `<a href="${l.loc2.map}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:7px 14px;background:rgba(13,31,60,.07);border:1px solid rgba(13,31,60,.15);border-radius:8px;font-size:.78rem;font-weight:600;color:var(--navy);text-decoration:none;transition:all .2s;"><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z'/><circle cx='12' cy='10' r='3'/></svg>View on Google Maps</a>` : ''}
+        ${map2 ? `<a href="${map2}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:7px 14px;background:rgba(13,31,60,.07);border:1px solid rgba(13,31,60,.15);border-radius:8px;font-size:.78rem;font-weight:600;color:var(--navy);text-decoration:none;transition:all .2s;"><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z'/><circle cx='12' cy='10' r='3'/></svg>View on Google Maps</a>` : ''}
         <p style="margin-top:14px;color:var(--maroon);font-weight:500;font-size:.8rem;">Open: ${l.hours || 'Sunday–Friday, 9AM–5PM'}</p>
       `;
 
@@ -3897,6 +3909,10 @@
         <a href="mailto:${l.contactEmail2 || 'beepolytechnic@gmail.com'}">${l.contactEmail2 || 'beepolytechnic@gmail.com'}</a>
         <p style="margin-top:8px;font-size:.8rem;">For admissions, partnerships &amp; counselling bookings.</p>
       `;
+
+      // Update header Call Now button with dynamic phone
+      const hdrCall = document.getElementById('hdrCallBtn');
+      if (hdrCall && l.phone1) hdrCall.href = 'tel:' + l.phone1;
     }
     function filterCourses(f, btn) {
       renderCourses(f);
@@ -4110,9 +4126,9 @@
         if (section) section.style.display = 'none';
         return;
       }
-      if (section) section.style.display = '';
+      if (section) section.style.display = 'block';
       el.innerHTML = posts.map((p, i) => {
-        const snippet = p.content ? p.content.replace(/<[^>]+>/g,'').slice(0,120) + '...' : '';
+        const snippet = p.content ? p.content.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...' : '';
         const dateStr = p.publishDate ? new Date(p.publishDate).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}) : '';
         return `<div class="blog-card reveal stagger-${(i%3)+1}" onclick="openArticle(${i})">
           <div class="blog-card-img">
