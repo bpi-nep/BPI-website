@@ -3658,8 +3658,21 @@
       const d = D();
       if (d.companyProfileUrl) {
         document.getElementById('company-profile').style.display = 'block';
-        document.getElementById('profileIframe').src = d.companyProfileUrl + '#toolbar=0&navpanes=0&scrollbar=0';
-        document.getElementById('profileDl').href = d.companyProfileUrl;
+        let previewUrl = d.companyProfileUrl;
+        let downloadUrl = d.companyProfileUrl;
+        
+        // Detect Google Drive URL and rewrite
+        const gdriveMatch = d.companyProfileUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+        if (gdriveMatch && gdriveMatch[1]) {
+          const fileId = gdriveMatch[1];
+          previewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+          downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+        } else {
+          previewUrl += '#toolbar=0&navpanes=0&scrollbar=0';
+        }
+
+        document.getElementById('profileIframe').src = previewUrl;
+        document.getElementById('profileDl').href = downloadUrl;
       } else {
         document.getElementById('company-profile').style.display = 'none';
       }

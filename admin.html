@@ -257,10 +257,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
     Hero Slides
   </div>
-  <div class="sb-item" onclick="nav('profile',this)">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-    Company Profile
-  </div>
+
   <div class="sb-item" onclick="nav('about',this)">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     About BPI
@@ -678,6 +675,15 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
         </div>
         <div class="fg"><label>Nepali Tagline (footer &amp; hero)</label><input id="brandNep" placeholder="सीप सिकौं, आत्मनिर्भर बनौं, भविष्य सुरक्षित गरौं।"/></div>
         <div class="fg"><label>Site Browser Title</label><input id="brandTitle" placeholder="B Polytechnic Institute Pvt. Ltd."/></div>
+        <div class="card-head" style="margin-top:24px;border-top:1px solid rgba(255,255,255,.05);padding-top:16px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Company Profile (PDF)
+        </div>
+        <div class="fg">
+          <label>Google Drive Link (Anyone with link can view)</label>
+          <input id="brandProfileUrl" placeholder="https://drive.google.com/file/d/.../view"/>
+          <small style="color:var(--muted);font-size:0.75rem;margin-top:4px;display:block;">Paste the direct Google Drive sharing link here to enable the Company Profile Flipbook on the website.</small>
+        </div>
         <div class="save-bar"><button class="btn-save" onclick="saveBranding()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save Branding</button></div>
       </div>
     </div>
@@ -1375,6 +1381,7 @@ function loadBranding(){
   document.getElementById('brandSub').value=b.sub||'Pvt. Ltd. · CTEVT Affiliated';
   document.getElementById('brandNep').value=b.nep||'सीप सिकौं, आत्मनिर्भर बनौं, भविष्य सुरक्षित गरौं।';
   document.getElementById('brandTitle').value=b.title||'B Polytechnic Institute Pvt. Ltd.';
+  document.getElementById('brandProfileUrl').value=d.companyProfileUrl||'';
 }
 function saveBranding(){
   const d=D();
@@ -1385,6 +1392,7 @@ function saveBranding(){
     nep:document.getElementById('brandNep').value,
     title:document.getElementById('brandTitle').value
   };
+  d.companyProfileUrl=document.getElementById('brandProfileUrl').value;
   saveD(d);toast('Branding saved!','success');
 }
 
