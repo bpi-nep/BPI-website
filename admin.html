@@ -1591,6 +1591,131 @@ function saveLocation(){
   saveD(d);toast('Location & contact details saved!','success');
 }
 
+// ── STATS EDITOR ─────────────────────────────
+const STATS_DEFAULTS=[
+  {n:'15+',l:'Years of TVET Excellence'},
+  {n:'1,500+',l:'Trainees Skilled Since 2008'},
+  {n:'100+',l:'Training Events Delivered'},
+  {n:'6',l:'CTEVT Trade Sectors'}
+];
+function loadStats(){
+  const d=D(); const stats=d.stats||STATS_DEFAULTS;
+  const el=document.getElementById('statsEditorGrid');
+  if(!el) return;
+  el.innerHTML=stats.map((s,i)=>`
+    <div class="card" style="padding:16px;margin:0;">
+      <div style="font-size:.68rem;font-weight:700;color:var(--gold-l);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;">Stat ${i+1}</div>
+      <div class="fg"><label>Number / Value</label><input id="stat_n_${i}" value="${s.n||''}"/></div>
+      <div class="fg"><label>Label</label><input id="stat_l_${i}" value="${s.l||''}"/></div>
+    </div>`).join('');
+}
+function saveStats(){
+  const d=D();
+  const stats=(d.stats||STATS_DEFAULTS).map((_,i)=>({
+    n:document.getElementById(`stat_n_${i}`)?.value||'',
+    l:document.getElementById(`stat_l_${i}`)?.value||''
+  }));
+  d.stats=stats;
+  saveD(d);toast('Stats saved!','success');
+}
+
+// ── SECURITY / PASSWORD ─────────────────────────
+async function savePassword(){
+  const pw=document.getElementById('newPassword').value.trim();
+  if(!pw||pw.length<6){toast('Password must be at least 6 characters.','error');return;}
+  const d=D();
+  d.adminPassword=pw;
+  await saveD(d);
+  document.getElementById('newPassword').value='';
+  toast('Password updated! Use the new password on next login.','success');
+}
+
+// ── BLOG & NEWS ─────────────────────────────────
+function loadBlog(){
+  const d=D(); const el=document.getElementById('blogList');
+  if(!el) return;
+  const posts=d.blog||[];
+  el.innerHTML=posts.length?posts.map((p,i)=>`<div class="list-item">
+    <div class="li-info">
+      <div class="li-title">${p.title}</div>
+      <div class="li-meta">${p.author||'BPI Admin'} · ${p.publishDate?new Date(p.publishDate).toLocaleDateString():'Draft'} <span class="status-badge ${p.status==='Published'?'status-published':'status-draft'}" style="margin-left:6px;">${p.status}</span></div>
+    </div>
+    <div class="li-actions">
+      <button class="btn-sm btn-edit" onclick="openBlogForm(${i})">Edit</button>
+      <button class="btn-sm btn-del" onclick="confirmDel('Delete post?','This will remove the article from the website.',()=>deleteBlog(${i}))">Delete</button>
+    </div>
+  </div>`).join(''):'<div style="color:var(--muted);font-size:.84rem;padding:20px 0;">No posts yet. Click "New Post" to create one.</div>';
+}
+function openBlogForm(i){
+  document.getElementById('blogForm').style.display='block';
+  document.getElementById('blogIdx').value=i;
+  document.getElementById('blogFormLabel').textContent=i<0?'New Post':'Edit Post';
+  if(i>=0){
+    const p=D().blog[i];
+    document.getElementById('bl_title').value=p.title||'';
+    document.getElementById('bl_author').value=p.author||'BPI Admin';
+    document.getElementById('bl_status').value=p.status||'Published';
+    document.getElementById('bl_content').value=p.content||'';
+    document.getElementById('bl_metaDesc').value=p.metaDesc||'';
+    createMediaUploader('mu-blog',{label:'Cover Image',initialValue:p.coverImg||'',maxSizeMB:4});
+  } else {
+    ['bl_title','bl_content','bl_metaDesc'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('bl_author').value='BPI Admin';
+    document.getElementById('bl_status').value='Published';
+    createMediaUploader('mu-blog',{label:'Cover Image',initialValue:'',maxSizeMB:4});
+  }
+}
+function closeBlogForm(){document.getElementById('blogForm').style.display='none';}
+async function saveBlog(){
+  const title=document.getElementById('bl_title').value.trim();
+  if(!title){toast('Title is required.','error');return;}
+  const d=D();
+  if(!d.blog) d.blog=[];
+  const idx=parseInt(document.getElementById('blogIdx').value);
+  const now=Date.now();
+  const post={
+    title,
+    author:document.getElementById('bl_author').value||'BPI Admin',
+    status:document.getElementById('bl_status').value,
+    content:document.getElementById('bl_content').value,
+    metaDesc:document.getElementById('bl_metaDesc').value,
+    coverImg:muGetValue('mu-blog'),
+    publishDate:idx>=0?(d.blog[idx].publishDate||now):now
+  };
+  if(idx>=0) d.blog[idx]=post; else d.blog.unshift(post);
+  await saveD(d);closeBlogForm();loadBlog();toast('Post saved!','success');
+}
+function deleteBlog(i){
+  const d=D();
+  if(!d.blog) return;
+  d.blog.splice(i,1);saveD(d);loadBlog();toast('Post deleted.','info');
+}
+
+// ── COURSE HEADER ─────────────────────────────
+async function saveCourseHeader(){
+  const d=D();
+  d.courseSection={sectionTitle:document.getElementById('cs_secTitle').value,sectionSub:document.getElementById('cs_secSub').value};
+  await saveD(d);toast('Course section header saved!','success');
+}
+
+// ── LOGOUT ────────────────────────────────────
+function doLogout(){
+  localStorage.removeItem('bpiAdminToken');
+  window.location.href = 'index.html';
+}
+
+// ── INACTIVITY TIMER (15 min = 900000ms) ──────
+let inactivityTimer;
+function resetInactivityTimer(){
+  clearTimeout(inactivityTimer);
+  inactivityTimer=setTimeout(()=>{
+    localStorage.removeItem('bpiAdminToken');
+    toast('Session expired due to inactivity.','error');
+    setTimeout(()=>window.location.reload(),1500);
+  },900000);
+}
+['mousemove','keypress','click','scroll'].forEach(ev=>document.addEventListener(ev,resetInactivityTimer,{passive:true}));
+
 // ── CONFIRM DIALOG ────────────────────────────
 let confirmCb=null;
 function confirmDel(title,msg,cb){
@@ -1625,6 +1750,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   const isAuth = await checkAuth();
   if(isAuth) {
     document.getElementById('loginOverlay').style.display = 'none';
+    resetInactivityTimer();
   }
   await loadDynamicData();
   updateDashboard();

@@ -3804,8 +3804,22 @@
       // Re-observe for reveal
       setTimeout(() => document.querySelectorAll('.reveal:not(.visible)').forEach(el => observer.observe(el)), 50);
     }
+    function renderCourseHeader() {
+      const cs = D().courseSection || {};
+      const t = document.getElementById('c_hTitle'); if (t && cs.sectionTitle) t.textContent = cs.sectionTitle;
+      const s = document.getElementById('c_hSub'); if (s && cs.sectionSub) s.textContent = cs.sectionSub;
+    }
     function renderAbout() {
       const a = D().about || DEFAULTS.about;
+      // Section headers
+      const hTitle = document.getElementById('at_hTitle');
+      const hSub = document.getElementById('at_hSub');
+      if (hTitle && a.sectionTitle) hTitle.textContent = a.sectionTitle;
+      if (hSub && a.sectionSub) hSub.textContent = a.sectionSub;
+      // About visuals
+      if (a.mainImg) { const img = document.querySelector('#panel-about-bpi .img-main img'); if (img) img.src = a.mainImg; }
+      if (a.accentImg) { const img = document.querySelector('#panel-about-bpi .img-accent img'); if (img) img.src = a.accentImg; }
+      if (a.badgeText) { const badge = document.querySelector('#panel-about-bpi .img-badge'); if (badge) badge.textContent = a.badgeText; }
       document.getElementById('abTitle').innerHTML = a.title || '';
       document.getElementById('abBody').innerHTML = (a.p1 ? `<p>${a.p1}</p>` : '') + (a.p2 ? `<p>${a.p2}</p>` : '') + (a.p3 ? `<p>${a.p3}</p>` : '');
 
@@ -3975,10 +3989,7 @@
       { id: 'n3', type: 'announcement', badge: 'Announcement', title: 'New Session Open for Admission', body: 'BPI is now accepting applications for multiple vocational programmes. Contact us or walk in.', link: 'Apply Now', delay: 24000, duration: 8000 }
     ];
 
-    let notifQueue = []; let notifActive = [];
     function getNotifsData() { return D().notifications && D().notifications.length ? D().notifications : NOTIF_DEFAULTS; }
-    function getDismissed() { try { return JSON.parse(sessionStorage.getItem('bpiDismissed') || '[]'); } catch (e) { return []; } }
-    function markDismissed(id) { const d = getDismissed(); if (!d.includes(id)) { d.push(id); sessionStorage.setItem('bpiDismissed', JSON.stringify(d)); } }
 
     function buildNotifCard(n) {
       const el = document.createElement('div');
@@ -4007,19 +4018,14 @@
     }
 
     function showNotif(n) {
-      const dismissed = getDismissed();
-      if (dismissed.includes(n.id)) return;
       const container = document.getElementById('notifContainer');
       const card = buildNotifCard(n);
       container.appendChild(card);
       requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add('show')));
-      // Progress bar countdown
       const pb = document.getElementById('pb-' + n.id);
       if (pb) { setTimeout(() => { pb.style.width = '0%'; }, 50); }
-      // Auto-dismiss
       const timer = setTimeout(() => dismissNotif(n.id), n.duration || 8000);
       card._timer = timer;
-      // Pause on hover
       card.addEventListener('mouseenter', () => { clearTimeout(card._timer); if (pb) pb.style.transitionDuration = '0ms'; });
       card.addEventListener('mouseleave', () => {
         const remaining = parseInt(getComputedStyle(pb).width) / card.offsetWidth * (n.duration || 8000);
@@ -4029,7 +4035,6 @@
     }
 
     function dismissNotif(id) {
-      markDismissed(id);
       const card = document.getElementById('notif-' + id);
       if (card) {
         clearTimeout(card._timer);
@@ -4042,9 +4047,7 @@
     function initNotifications() {
       const notifs = getNotifsData();
       notifs.forEach(n => {
-        if (!getDismissed().includes(n.id)) {
-          setTimeout(() => showNotif(n), n.delay || 2000);
-        }
+        setTimeout(() => showNotif(n), n.delay || 2000);
       });
     }
 
@@ -4170,7 +4173,7 @@
     // ── INIT ──────────────────────────────────────
     document.addEventListener('DOMContentLoaded', async () => {
       await loadDynamicData();
-      renderBranding(); loadAnn(); renderHero(); renderAbout(); renderHistory(); renderServices(); renderPartners(); renderGallery(); renderCourses(); renderRojgaar(); renderContact();
+      renderBranding(); loadAnn(); renderHero(); renderAbout(); renderCourseHeader(); renderHistory(); renderServices(); renderPartners(); renderGallery(); renderCourses(); renderRojgaar(); renderContact();
       initReveal(); initNotifications();
       slideTimer = setInterval(() => showSlide(curSlide + 1), 5500);
     });
