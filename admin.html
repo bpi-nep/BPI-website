@@ -793,14 +793,33 @@ const DEFAULTS = {
 let siteData = null;
 function D() { return siteData || JSON.parse(JSON.stringify(DEFAULTS)); }
 
+function mergeObj(def, api) {
+  const out = JSON.parse(JSON.stringify(def));
+  if (!api) return out;
+  for (let k in api) {
+    if (Array.isArray(api[k])) {
+      out[k] = api[k].length ? api[k] : out[k];
+    } else if (typeof api[k] === 'object' && api[k] !== null) {
+      out[k] = mergeObj(out[k] || {}, api[k]);
+    } else {
+      out[k] = api[k] !== undefined && api[k] !== '' ? api[k] : out[k];
+    }
+  }
+  return out;
+}
+
 async function loadDynamicData() {
   try {
-    const res = await fetch('/api/data');
+    const res = await fetch('/api/data?t=' + new Date().getTime(), { cache: 'no-store' });
     if(res.ok) {
-      siteData = await res.json();
+      const apiData = await res.json();
+      siteData = mergeObj(DEFAULTS, apiData);
+    } else {
+      siteData = JSON.parse(JSON.stringify(DEFAULTS));
     }
   } catch(e) {
     console.error(e);
+    siteData = JSON.parse(JSON.stringify(DEFAULTS));
   }
 }
 
@@ -834,7 +853,7 @@ async function checkAuth() {
   const token = localStorage.getItem('bpiAdminToken');
   if(!token) return false;
   try {
-    const res = await fetch('/api/verify', { headers: { 'Authorization': 'Bearer ' + token } });
+    const res = await fetch('/api/verify?t=' + new Date().getTime(), { headers: { 'Authorization': 'Bearer ' + token }, cache: 'no-store' });
     return res.ok;
   } catch(e) { return false; }
 }
