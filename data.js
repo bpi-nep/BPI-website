@@ -1,6 +1,8 @@
 import { kv } from '@vercel/kv';
 import jwt from 'jsonwebtoken';
 
+export const config = { api: { bodyParser: { sizeLimit: '10mb' } } };
+
 const JWT_SECRET = process.env.JWT_SECRET || 'bpi-super-secret-key-2026';
 
 // Fallback default data

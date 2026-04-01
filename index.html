@@ -2718,14 +2718,14 @@
           <button class="nav-link" onclick="scrollTo('courses')">Training Courses</button>
         </div>
         <div class="nav-item">
-          <button class="nav-link">
+          <button class="nav-link" onclick="scrollTo('rojgaar'); if(window.innerWidth<768) document.getElementById('nl').classList.remove('open');">
             BPI–Rojgaar
             <svg class="chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
               <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             </svg>
           </button>
           <div class="drop">
-            <a class="drop-item" onclick="scrollTo('rojgaar')">
+            <a class="drop-item" onclick="scrollTo('rojgaar'); document.getElementById('nl').classList.remove('open');">
               <div class="drop-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--maroon)"
                   stroke-width="2">
                   <path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z" />
@@ -2733,7 +2733,7 @@
                 </svg></div>
               Career Counselling
             </a>
-            <a class="drop-item" onclick="scrollTo('rojgaar')">
+            <a class="drop-item" onclick="scrollTo('rojgaar'); document.getElementById('nl').classList.remove('open');">
               <div class="drop-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--maroon)"
                   stroke-width="2">
                   <circle cx="12" cy="12" r="10" />
@@ -2742,14 +2742,14 @@
                 </svg></div>
               Overseas Guidance
             </a>
-            <a class="drop-item" onclick="scrollTo('rojgaar')">
+            <a class="drop-item" onclick="scrollTo('rojgaar'); document.getElementById('nl').classList.remove('open');">
               <div class="drop-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--maroon)"
                   stroke-width="2">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg></div>
               Safe Migration Info
             </a>
-            <a class="drop-item" onclick="openApply('Free Career Counselling')">
+            <a class="drop-item" onclick="openApply('Free Career Counselling'); document.getElementById('nl').classList.remove('open');">
               <div class="drop-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--maroon)"
                   stroke-width="2">
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -3016,6 +3016,26 @@
       <!-- Gallery panel -->
       <div class="panel" id="panel-gallery">
         <div class="gal-grid" id="galGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPANY PROFILE -->
+  <section id="company-profile" style="display:none; padding-bottom:120px; background:#fff;">
+    <div class="wrap" style="max-width:1100px;">
+      <div class="sec-hdr reveal">
+        <div class="sec-eye">Company Profile</div>
+        <h2 class="sec-title">Our Capabilities</h2>
+        <p class="sec-sub">View and download B Polytechnic Institute's official company profile.</p>
+      </div>
+      <div style="background:#F4F4F5; border-radius:16px; padding:12px; box-shadow:0 12px 30px rgba(0,0,0,0.06); margin-bottom: 24px;">
+        <iframe id="profileIframe" src="" width="100%" height="700px" style="border:none; border-radius:8px;"></iframe>
+      </div>
+      <div style="text-align:center;">
+        <a id="profileDl" target="_blank" href="" download="BPI_Company_Profile.pdf" class="btn-primary" style="display:inline-flex;text-decoration:none;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download Profile PDF
+        </a>
       </div>
     </div>
   </section>
@@ -3526,7 +3546,21 @@
       document.getElementById('heroNep').textContent = s.nep || '';
       document.getElementById('heroDesc').textContent = s.desc || '';
       const acts = document.getElementById('heroActions');
-      acts.innerHTML = (s.btn1 ? `<button class="btn-hero btn-hero-gold" onclick="openApply('${s.title?.replace(/<br>/g, ' ')}')">${s.btn1}</button>` : '') + (s.btn2 ? `<button class="btn-hero btn-hero-outline" onclick="scrollTo('courses')">${s.btn2}</button>` : '');
+      acts.innerHTML = '';
+      if (s.btn1) {
+        const b1 = document.createElement('button');
+        b1.className = 'btn-hero btn-hero-gold';
+        b1.textContent = s.btn1;
+        b1.onclick = () => openApply((s.title||'').replace(/<br>/g, ' '));
+        acts.appendChild(b1);
+      }
+      if (s.btn2) {
+        const b2 = document.createElement('button');
+        b2.className = 'btn-hero btn-hero-outline';
+        b2.textContent = s.btn2;
+        b2.onclick = () => scrollTo('courses');
+        acts.appendChild(b2);
+      }
       document.querySelectorAll('.s-dot').forEach((d, i) => d.classList.toggle('on', i === n));
     }
     function gotoSlide(n) { showSlide(n); clearInterval(slideTimer); slideTimer = setInterval(() => showSlide(curSlide + 1), 5500); }
@@ -3620,6 +3654,15 @@
       const a = D().about || DEFAULTS.about;
       document.getElementById('abTitle').innerHTML = a.title || '';
       document.getElementById('abBody').innerHTML = (a.p1 ? `<p>${a.p1}</p>` : '') + (a.p2 ? `<p>${a.p2}</p>` : '') + (a.p3 ? `<p>${a.p3}</p>` : '');
+
+      const d = D();
+      if (d.companyProfileUrl) {
+        document.getElementById('company-profile').style.display = 'block';
+        document.getElementById('profileIframe').src = d.companyProfileUrl + '#toolbar=0&navpanes=0&scrollbar=0';
+        document.getElementById('profileDl').href = d.companyProfileUrl;
+      } else {
+        document.getElementById('company-profile').style.display = 'none';
+      }
     }
 
     function renderRojgaar() {
@@ -3769,7 +3812,7 @@
     ];
 
     let notifQueue = []; let notifActive = [];
-    function getNotifsData() { try { const s = localStorage.getItem('bpiSiteData'); const d = s ? JSON.parse(s) : {}; return d.notifications && d.notifications.length ? d.notifications : NOTIF_DEFAULTS; } catch (e) { return NOTIF_DEFAULTS; } }
+    function getNotifsData() { return D().notifications && D().notifications.length ? D().notifications : NOTIF_DEFAULTS; }
     function getDismissed() { try { return JSON.parse(sessionStorage.getItem('bpiDismissed') || '[]'); } catch (e) { return []; } }
     function markDismissed(id) { const d = getDismissed(); if (!d.includes(id)) { d.push(id); sessionStorage.setItem('bpiDismissed', JSON.stringify(d)); } }
 
@@ -3843,11 +3886,11 @@
 
     function renderBranding() {
       const b = D().branding;
-      if (b && b.logo) {
+      if (b && b.logoUrl) {
         const logo1 = document.getElementById('logo1');
         const logo2 = document.getElementById('logo2');
-        if (logo1) logo1.src = b.logo;
-        if (logo2) logo2.src = b.logo;
+        if (logo1) logo1.src = b.logoUrl;
+        if (logo2) logo2.src = b.logoUrl;
       }
       if (b && b.title) document.title = b.title;
       

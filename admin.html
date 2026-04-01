@@ -257,6 +257,10 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
     Hero Slides
   </div>
+  <div class="sb-item" onclick="nav('profile',this)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    Company Profile
+  </div>
   <div class="sb-item" onclick="nav('about',this)">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     About BPI
@@ -419,6 +423,26 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
           <button class="btn-save" onclick="saveSlide()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save Slide</button>
           <button class="btn-cancel" onclick="closeSlideForm()">Cancel</button>
         </div>
+      </div>
+    </div>
+
+    <!-- ── COMPANY PROFILE ─── -->
+    <div class="section" id="sec-profile">
+      <div class="sec-head"><div class="sec-head-left"><h2>Company Profile</h2><p>Upload a PDF flipbook for users to view and download.</p></div></div>
+      <div class="card">
+        <div class="card-head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF Profile Document</div>
+        <div id="mu-profile" class="mu-wrap"></div>
+        <div class="save-bar"><button class="btn-save" onclick="saveProfile()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save & Publish</button></div>
+      </div>
+    </div>
+
+    <!-- ── COMPANY PROFILE ─── -->
+    <div class="section" id="sec-profile">
+      <div class="sec-head"><div class="sec-head-left"><h2>Company Profile</h2><p>Upload a PDF flipbook for users to view and download.</p></div></div>
+      <div class="card">
+        <div class="card-head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF Profile Document</div>
+        <div id="mu-profile" class="mu-wrap"></div>
+        <div class="save-bar"><button class="btn-save" onclick="saveProfile()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save & Publish</button></div>
       </div>
     </div>
 
@@ -890,7 +914,7 @@ function nav(id, el) {
   document.querySelectorAll('.sb-item').forEach(s=>s.classList.remove('active'));
   document.getElementById('sec-'+id).classList.add('active');
   if(el) el.classList.add('active');
-  const titles={dashboard:'Dashboard',announcement:'Announcement Bar',hero:'Hero Slides',about:'About BPI',history:'History Timeline',services:'Services',courses:'Training Courses',gallery:'Gallery',partners:'Partners',rojgaar:'BPI–Rojgaar',notifications:'Popup Notifications',logo:'Logo & Branding',social:'Social Media Links',location:'Office Locations'};
+  const titles={dashboard:'Dashboard',announcement:'Announcement Bar',hero:'Hero Slides',profile:'Company Profile',about:'About BPI',history:'History Timeline',services:'Services',courses:'Training Courses',gallery:'Gallery',partners:'Partners',rojgaar:'BPI–Rojgaar',notifications:'Popup Notifications',logo:'Logo & Branding',social:'Social Media Links',location:'Office Locations'};
   document.getElementById('topTitle').textContent=titles[id]||id;
   document.getElementById('topBread').textContent=titles[id]||id;
   loadSection(id);
@@ -900,6 +924,7 @@ function loadSection(id) {
   if(id==='dashboard') updateDashboard();
   if(id==='announcement') loadAnn();
   if(id==='hero') loadSlides();
+  if(id==='profile') loadProfile();
   if(id==='about') loadAbout();
   if(id==='history') loadHistory();
   if(id==='services') loadServices();
@@ -965,6 +990,26 @@ function saveSlide(){
 }
 function deleteSlide(i){const d=D();d.slides.splice(i,1);saveD(d);loadSlides();toast('Slide deleted.','info');}
 function moveSlide(i,dir){const d=D();const tmp=d.slides[i];d.slides[i]=d.slides[i+dir];d.slides[i+dir]=tmp;saveD(d);loadSlides();}
+
+// ── PROFILE ───────────────────────────────────
+function loadProfile() {
+  const d=D();
+  createMediaUploader('mu-profile', {label:'Company PDF', initialValue:d.companyProfileUrl||'', maxSizeMB:10});
+}
+function saveProfile() {
+  const d=D(); d.companyProfileUrl=muGetValue('mu-profile');
+  saveD(d); toast('Profile updated!', 'success');
+}
+
+// ── PROFILE ───────────────────────────────────
+function loadProfile() {
+  const d=D();
+  createMediaUploader('mu-profile', {label:'Company PDF', initialValue:d.companyProfileUrl||'', maxSizeMB:10});
+}
+function saveProfile() {
+  const d=D(); d.companyProfileUrl=muGetValue('mu-profile');
+  saveD(d); toast('Profile updated!', 'success');
+}
 
 // ── ABOUT ─────────────────────────────────────
 function loadAbout(){
@@ -1236,31 +1281,60 @@ function muProcessFile(id,file){
   const inst=muInstances[id];if(!inst)return;
   const warn=document.getElementById(`${id}-warn`);
   const prog=document.getElementById(`${id}-progress`);
-  if(file.size>inst.maxSizeMB*1024*1024){if(warn)warn.style.display='block';return;}
+  if(file.size>inst.maxSizeMB*1024*1024){if(warn)warn.style.display='block';toast('File too large! Max '+inst.maxSizeMB+'MB','error');return;}
   if(warn)warn.style.display='none';
-  if(prog){prog.style.display='block';prog.style.width='0%';}
-  const reader=new FileReader();
-  reader.onprogress=e=>{if(e.lengthComputable&&prog)prog.style.width=(e.loaded/e.total*100)+'%';};
-  reader.onload=async e=>{
-    if(prog){prog.style.width='100%';setTimeout(()=>prog.style.display='none',600);}
-    const base64 = e.target.result;
+  if(prog){prog.style.display='block';prog.style.width='20%';}
+
+  const uploadBase64 = async (b64, name) => {
+    if(prog) prog.style.width='80%';
     const token = localStorage.getItem('bpiAdminToken');
     try {
       const res = await fetch('/api/upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify({ filename: file.name, base64 })
+        body: JSON.stringify({ filename: name, base64: b64 })
       });
+      if(prog){prog.style.width='100%';setTimeout(()=>prog.style.display='none',600);}
       if(res.ok) {
         const data = await res.json();
-        muSetValue(id, data.url);
+        muSetValue(id, data.url || data.url);
       } else {
-        toast('Failed to upload image', 'error');
-        muSetValue(id, base64); // Fallback to base64 if upload fails
+        toast('Failed to upload data', 'error');
+        muSetValue(id, b64); 
       }
     } catch(err) {
-      toast('Upload error', 'error');
-      muSetValue(id, base64);
+      toast('Upload network error', 'error');
+      if(prog) prog.style.display='none';
+      muSetValue(id, b64);
+    }
+  };
+
+  const isImage = file.type.startsWith('image/') && file.type !== 'image/svg+xml' && file.type !== 'image/gif';
+  
+  const reader=new FileReader();
+  reader.onprogress=e=>{if(e.lengthComputable&&prog)prog.style.width=(e.loaded/e.total*40)+'%';};
+  reader.onload=e=>{
+    if(prog) prog.style.width='50%';
+    let base64 = e.target.result;
+    
+    if (isImage) {
+      const img = new Image();
+      img.onload = () => {
+        const cvs = document.createElement('canvas');
+        const maxW = 1200;
+        let w = img.width, h = img.height;
+        if (w > maxW) { h = Math.round((maxW / w) * h); w = maxW; }
+        cvs.width = w; cvs.height = h;
+        const ctx = cvs.getContext('2d');
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        base64 = cvs.toDataURL('image/jpeg', 0.8);
+        uploadBase64(base64, file.name.replace(/\.[^/.]+$/, "") + ".jpg");
+      };
+      img.src = base64;
+    } else {
+      uploadBase64(base64, file.name);
     }
   };
   reader.readAsDataURL(file);
